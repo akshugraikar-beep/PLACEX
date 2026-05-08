@@ -55,6 +55,7 @@ import CandidateManagement from "./pages/company/CandidateManagement";
 import AIAnalysis from "./pages/company/AIAnalysis";
 import HRAnalytics from "./pages/company/HRAnalytics";
 import VideoCallPage from "./pages/company/VideoCallPage";
+import OfferLetterPage from "./pages/company/OfferLetterPage";
 import Applicants from "./pages/company/Applicants";
 import Collaboration from "./pages/company/Collaboration";
 import Employees from "./pages/company/Employees";
@@ -217,6 +218,7 @@ const AppWrapper = () => {
               <Route path="insights" element={<Insights />} />
               <Route path="collaboration" element={<Collaboration />} />
               <Route path="reports" element={<CompanyReports />} />
+              <Route path="offer-letter" element={<OfferLetterPage />} />
               {/* Keep old routes working */}
               <Route path="profile" element={<EmployeeProfile />} />
               <Route path="performance" element={<PerformanceOverview />} />

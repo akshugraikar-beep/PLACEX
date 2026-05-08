@@ -55,30 +55,26 @@ const EmployeeSidebar = ({ isExpanded, setIsExpanded }) => {
       children: [
         { icon: Users,     label: "Candidate Management", path: "/dashboard/employee/candidates",  type: "link" },
         { icon: UserCheck, label: "Applicants Tracker",   path: "/dashboard/employee/applicants",  type: "link" },
-        { icon: Brain,     label: "AI Analysis",          path: "/dashboard/employee/ai-analysis", type: "link" },
         { icon: Star,      label: "Shortlisted",          path: "/dashboard/employee/shortlisted", type: "link" },
       ],
     },
     {
       icon: Briefcase, label: "Recruitment", type: "section", sectionKey: "recruitment",
       children: [
-        { icon: Briefcase, label: "My Jobs",      path: "/dashboard/employee/my-jobs",    type: "link" },
         { icon: Plus,      label: "Post New Job", path: "/dashboard/employee/post-job",   type: "link" },
-        { icon: Calendar,  label: "Interviews",   path: "/dashboard/employee/interviews", type: "link" },
         { icon: Video,     label: "Video Call",   path: "/dashboard/employee/video-call", type: "link" },
       ],
     },
     {
       icon: BarChart3, label: "Intelligence", type: "section", sectionKey: "intelligence",
       children: [
-        { icon: TrendingUp, label: "HR Analytics",     path: "/dashboard/employee/hr-analytics", type: "link" },
-        { icon: FileText,   label: "Reports",           path: "/dashboard/employee/reports",      type: "link" },
-        { icon: TrendingUp, label: "Company Insights",  path: "/dashboard/employee/insights",     type: "link" },
+        { icon: TrendingUp, label: "HR Analytics",    path: "/dashboard/employee/hr-analytics",  type: "link" },
+        { icon: FileText,   label: "Offer Letter",    path: "/dashboard/employee/offer-letter",   type: "link" },
+        { icon: TrendingUp, label: "Company Insights",path: "/dashboard/employee/insights",       type: "link" },
       ],
     },
-    { icon: Building2, label: "Collaboration", path: "/dashboard/employee/collaboration", type: "link" },
-    { icon: User,      label: "Profile",       path: "/dashboard/employee/profile",       type: "link" },
-    { icon: Settings,  label: "Settings",      path: "/dashboard/employee/settings",      type: "link" },
+    { icon: User,      label: "Profile",  path: "/dashboard/employee/profile",  type: "link" },
+    { icon: Settings,  label: "Settings", path: "/dashboard/employee/settings", type: "link" },
     { icon: isDarkMode ? Sun : Moon, label: isDarkMode ? "Light Mode" : "Dark Mode", onClick: toggleDarkMode, type: "button" },
     { icon: LogOut, label: "Logout", onClick: handleLogout, type: "button" },
   ];
