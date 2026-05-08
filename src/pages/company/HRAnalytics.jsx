@@ -64,12 +64,12 @@ const HRAnalytics = () => {
   ];
 
   return (
-    <div className="min-h-screen p-4 md:p-6" style={{ background: 'linear-gradient(135deg,#0a0a1a,#0d0d2b,#0a0a1a)' }}>
+    <div className="hr-page">
 
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-        <h1 className="text-2xl font-bold text-white mb-1">HR Analytics & Reports</h1>
-        <p className="text-slate-400 text-sm">Deep hiring insights powered by AI</p>
+        <h1 className="text-2xl font-bold hr-text-primary mb-1">HR Analytics & Reports</h1>
+        <p className="hr-text-secondary text-sm">Deep hiring insights powered by AI</p>
       </motion.div>
 
       {/* KPI Strip */}

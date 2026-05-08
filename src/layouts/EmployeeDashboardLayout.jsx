@@ -84,15 +84,14 @@ const EmployeeDashboardLayout = () => {
         toastOptions={{ duration: 5000, style: { background: "#1e1b4b", color: "#fff", border: "1px solid rgba(124,58,237,0.3)" } }}
       />
 
-      <div className="flex h-screen overflow-hidden" style={{ background: "#070714" }}>
+      <div className="flex h-screen overflow-hidden hr-layout" >
         <EmployeeSidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
 
         <div className={`flex flex-col flex-1 min-h-0 w-full transition-[margin] duration-300 ease-out ${
           !isMobile ? (sidebarExpanded ? "ml-64" : "ml-20") : "ml-0"
         }`}>
           {/* Topbar */}
-          <header className="sticky top-0 z-20 px-4 sm:px-6 py-3 flex-shrink-0 flex items-center justify-between"
-            style={{ background: "rgba(10,10,30,0.85)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(124,58,237,0.12)" }}>
+          <header className="hr-topbar sticky top-0 z-20 px-4 sm:px-6 py-3 flex-shrink-0 flex items-center justify-between">
 
             <div className="flex items-center min-w-0 flex-1 mr-4">
               {isMobile && (
@@ -112,8 +111,8 @@ const EmployeeDashboardLayout = () => {
             </div>
 
             <div className="flex items-center gap-3 flex-shrink-0">
-              <button className="relative p-2 rounded-xl text-slate-400 hover:text-white transition"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <div className="relative p-2 rounded-xl hr-text-secondary hover:hr-text-primary transition"
+                style={{ background: "var(--hr-input-bg)", border: "var(--hr-input-border)" }}>
                 <Bell className="w-4 h-4" />
                 <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-violet-500"></span>
               </button>

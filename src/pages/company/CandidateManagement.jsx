@@ -174,16 +174,16 @@ const CandidateManagement = () => {
   });
 
   return (
-    <div className="min-h-screen p-4 md:p-6" style={{ background: 'linear-gradient(135deg, #0a0a1a 0%, #0d0d2b 50%, #0a0a1a 100%)' }}>
+    <div className="hr-page">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-        <h1 className="text-2xl font-bold text-white mb-1">Candidate Management</h1>
-        <p className="text-slate-400 text-sm">AI-scored talent pool — {CANDIDATES.length} total candidates</p>
+        <h1 className="text-2xl font-bold hr-text-primary mb-1">Candidate Management</h1>
+        <p className="hr-text-secondary text-sm">AI-scored talent pool — {CANDIDATES.length} total candidates</p>
       </motion.div>
 
       {/* Search + Filters */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
-        className="rounded-2xl p-4 mb-6" style={{ background: 'rgba(15,15,30,0.7)', border: '1px solid rgba(255,255,255,0.07)' }}>
+        className="hr-card p-4 mb-6">
         <div className="flex gap-3 flex-wrap">
           <div className="flex-1 min-w-48 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -248,13 +248,13 @@ const CandidateManagement = () => {
 
       {/* Candidate Table */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-        className="rounded-2xl overflow-hidden" style={{ background: 'rgba(15,15,30,0.7)', border: '1px solid rgba(255,255,255,0.07)' }}>
+        className="hr-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px]">
             <thead>
               <tr style={{ background: 'rgba(124,58,237,0.08)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                 {['Candidate', 'Role / College', 'Skills', 'AI Score', 'Comm', 'Tech', 'Conf', 'Status', 'Actions'].map(h => (
-                  <th key={h} className="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">{h}</th>
+                  <th key={h} className="px-4 py-3.5 text-left text-xs font-semibold hr-text-muted uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
             </thead>

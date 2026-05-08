@@ -82,19 +82,19 @@ const AIAnalysis = () => {
   ];
 
   return (
-    <div className="min-h-screen p-4 md:p-6" style={{ background: 'linear-gradient(135deg,#0a0a1a,#0d0d2b,#0a0a1a)' }}>
+    <div className="hr-page">
 
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-        <div className="flex items-center gap-2 text-slate-500 text-sm mb-3">
-          <span>Candidates</span><ChevronRight className="w-3 h-3" /><span className="text-white">AI Analysis</span>
+        <div className="flex items-center gap-2 hr-text-muted text-sm mb-3">
+          <span>Candidates</span><ChevronRight className="w-3 h-3" /><span className="hr-text-primary">AI Analysis</span>
         </div>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className="text-2xl font-bold hr-text-primary">
               AI Candidate Analysis
             </h1>
-            <p className="text-slate-400 text-sm mt-1">{candidate.name} · {candidate.role} · {candidate.college}</p>
+            <p className="hr-text-secondary text-sm mt-1">{candidate.name} · {candidate.role} · {candidate.college}</p>
           </div>
           <div className="text-right">
             <div className="text-4xl font-black text-white">{candidate.aiScore}<span className="text-xl text-slate-400">%</span></div>

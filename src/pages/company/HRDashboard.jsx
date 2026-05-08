@@ -60,12 +60,8 @@ const StatCard = ({ stat, index }) => (
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: index * 0.08 }}
     whileHover={{ y: -4, scale: 1.02 }}
-    className="relative rounded-2xl overflow-hidden cursor-pointer group"
-    style={{
-      background: 'rgba(15,15,30,0.6)',
-      backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255,255,255,0.08)',
-    }}
+    className="relative rounded-2xl overflow-hidden cursor-pointer group hr-card"
+    style={{}}
   >
     <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-10 group-hover:opacity-20 transition-opacity duration-300`} />
     <div className="relative p-5">
@@ -110,19 +106,19 @@ const HRDashboard = () => {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
 
   return (
-    <div className="min-h-screen p-4 md:p-6" style={{ background: 'linear-gradient(135deg, #0a0a1a 0%, #0d0d2b 50%, #0a0a1a 100%)' }}>
+    <div className="hr-page">
 
       {/* ── Page Header ── */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-1">
+            <h1 className="text-3xl font-bold hr-text-primary mb-1">
               HR Intelligence{' '}
               <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
                 Portal
               </span>
             </h1>
-            <p className="text-slate-400">AI-powered hiring insights & candidate analytics</p>
+            <p className="hr-text-secondary">AI-powered hiring insights & candidate analytics</p>
           </div>
           <div className="flex gap-3">
             <button
@@ -159,8 +155,8 @@ const HRDashboard = () => {
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-white">Hiring Pipeline</h3>
-              <p className="text-xs text-slate-500">6-month trend</p>
+              <h3 className="text-lg font-semibold hr-text-primary">Hiring Pipeline</h3>
+              <p className="text-xs hr-text-muted">6-month trend</p>
             </div>
             <TrendingUp className="w-5 h-5 text-violet-400" />
           </div>
@@ -209,8 +205,8 @@ const HRDashboard = () => {
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-lg font-semibold text-white">Skill Distribution</h3>
-              <p className="text-xs text-slate-500">Candidate pool</p>
+              <h3 className="text-lg font-semibold hr-text-primary">Skill Distribution</h3>
+              <p className="text-xs hr-text-muted">Candidate pool</p>
             </div>
             <Target className="w-5 h-5 text-cyan-400" />
           </div>
@@ -249,8 +245,8 @@ const HRDashboard = () => {
         >
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h3 className="text-lg font-semibold text-white">Top AI-Ranked Candidates</h3>
-              <p className="text-xs text-slate-500">Sorted by AI match score</p>
+              <h3 className="text-lg font-semibold hr-text-primary">Top AI-Ranked Candidates</h3>
+              <p className="text-xs hr-text-muted">Sorted by AI match score</p>
             </div>
             <button
               onClick={() => navigate('/dashboard/company/applicants')}
@@ -335,8 +331,8 @@ const HRDashboard = () => {
         >
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h3 className="text-lg font-semibold text-white">Recent Activity</h3>
-              <p className="text-xs text-slate-500">Live updates</p>
+              <h3 className="text-lg font-semibold hr-text-primary">Recent Activity</h3>
+              <p className="text-xs hr-text-muted">Live updates</p>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />

@@ -461,3 +461,84 @@ body {
 .dark * {
   scrollbar-color: #475569 transparent;
 }
+
+/* ===== HR Portal Theme Variables ===== */
+:root {
+  --hr-page-bg:        #f1f5f9;
+  --hr-page-bg-grad:   linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+  --hr-sidebar-bg:     linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
+  --hr-card-bg:        rgba(255, 255, 255, 0.85);
+  --hr-card-border:    1px solid rgba(124, 58, 237, 0.15);
+  --hr-card-shadow:    0 4px 24px rgba(124,58,237,0.08);
+  --hr-text-primary:   #0f172a;
+  --hr-text-secondary: #475569;
+  --hr-text-muted:     #94a3b8;
+  --hr-topbar-bg:      rgba(255,255,255,0.85);
+  --hr-topbar-border:  1px solid rgba(124,58,237,0.1);
+  --hr-input-bg:       rgba(241,245,249,0.9);
+  --hr-input-border:   1px solid rgba(124,58,237,0.18);
+  --hr-hover-bg:       rgba(124,58,237,0.07);
+}
+
+.dark {
+  --hr-page-bg:        #070714;
+  --hr-page-bg-grad:   linear-gradient(135deg, #0a0a1a 0%, #0d0d2b 50%, #0a0a1a 100%);
+  --hr-sidebar-bg:     linear-gradient(180deg, #0a0a1e 0%, #0d0d2b 100%);
+  --hr-card-bg:        rgba(15, 15, 30, 0.6);
+  --hr-card-border:    1px solid rgba(255, 255, 255, 0.08);
+  --hr-card-shadow:    none;
+  --hr-text-primary:   #f8fafc;
+  --hr-text-secondary: #94a3b8;
+  --hr-text-muted:     #475569;
+  --hr-topbar-bg:      rgba(10,10,30,0.85);
+  --hr-topbar-border:  1px solid rgba(124,58,237,0.12);
+  --hr-input-bg:       rgba(255,255,255,0.04);
+  --hr-input-border:   1px solid rgba(255,255,255,0.06);
+  --hr-hover-bg:       rgba(124,58,237,0.12);
+}
+
+/* HR Portal page wrapper */
+.hr-page {
+  min-height: 100vh;
+  padding: 1.5rem;
+  background: var(--hr-page-bg-grad);
+}
+
+/* HR Portal cards */
+.hr-card {
+  background: var(--hr-card-bg);
+  border: var(--hr-card-border);
+  box-shadow: var(--hr-card-shadow);
+  backdrop-filter: blur(20px);
+  border-radius: 1rem;
+}
+
+/* HR text colors */
+.hr-text-primary   { color: var(--hr-text-primary); }
+.hr-text-secondary { color: var(--hr-text-secondary); }
+.hr-text-muted     { color: var(--hr-text-muted); }
+
+/* HR topbar */
+.hr-topbar {
+  background: var(--hr-topbar-bg);
+  border-bottom: var(--hr-topbar-border);
+  backdrop-filter: blur(20px);
+}
+
+/* HR input */
+.hr-input {
+  background: var(--hr-input-bg);
+  border: var(--hr-input-border);
+  color: var(--hr-text-primary);
+}
+
+/* HR layout root */
+.hr-layout {
+  background: var(--hr-page-bg);
+}
+
+/* HR sidebar */
+.hr-sidebar {
+  background: var(--hr-sidebar-bg);
+}
+
