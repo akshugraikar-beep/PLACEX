@@ -200,7 +200,20 @@ const AppWrapper = () => {
                 </ProtectedRoute>
               }
             >
-              <Route index element={<EmployeeDashboard />} />
+              {/* HR Portal pages — index is now the HR Dashboard */}
+              <Route index element={<HRDashboard />} />
+              <Route path="candidates" element={<CandidateManagement />} />
+              <Route path="ai-analysis" element={<AIAnalysis />} />
+              <Route path="hr-analytics" element={<HRAnalytics />} />
+              <Route path="shortlisted" element={<Applicants />} />
+              <Route path="interviews" element={<Applicants />} />
+              <Route path="applicants" element={<Applicants />} />
+              <Route path="my-jobs" element={<MyCompanyJobs />} />
+              <Route path="post-job" element={<PostJob />} />
+              <Route path="insights" element={<Insights />} />
+              <Route path="collaboration" element={<Collaboration />} />
+              <Route path="reports" element={<CompanyReports />} />
+              {/* Keep old routes working */}
               <Route path="profile" element={<EmployeeProfile />} />
               <Route path="performance" element={<PerformanceOverview />} />
               <Route path="skills" element={<SkillDevelopmentTracker />} />
@@ -208,10 +221,7 @@ const AppWrapper = () => {
               <Route path="career" element={<CareerProgression />} />
               <Route path="feedback" element={<CompanyFeedback />} />
               <Route path="learning" element={<LearningResources />} />
-              <Route
-                path="interview-practice"
-                element={<InterviewPracticeZone />}
-              />
+              <Route path="interview-practice" element={<InterviewPracticeZone />} />
               <Route path="job-insights" element={<JobSwitchInsights />} />
               <Route path="settings" element={<EmployeeSettings />} />
             </Route>
