@@ -164,6 +164,7 @@ const AppWrapper = () => {
               <Route path="insights" element={<Insights />} />
               <Route path="collaboration" element={<Collaboration />} />
               <Route path="reports" element={<CompanyReports />} />
+              <Route path="video-call" element={<VideoCallPage />} />
               <Route path="settings" element={<Settings />} />
             </Route>
 
@@ -182,6 +183,7 @@ const AppWrapper = () => {
               <Route path="hr-analytics" element={<HRAnalytics />} />
               <Route path="shortlisted" element={<Applicants />} />
               <Route path="interviews" element={<Applicants />} />
+              <Route path="video-call" element={<VideoCallPage />} />
               <Route path="post-job" element={<PostJob />} />
               <Route path="applicants" element={<Applicants />} />
               <Route path="my-jobs" element={<MyCompanyJobs />} />

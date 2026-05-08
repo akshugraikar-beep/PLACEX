@@ -19,6 +19,7 @@ import {
   Search,
   Briefcase,
   X,
+  Video,
 } from "lucide-react";
 
 const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
@@ -93,9 +94,10 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
       type: "section",
       sectionKey: "jobs",
       children: [
-        { icon: Briefcase, label: "My Jobs",           path: "/dashboard/company/my-jobs",   type: "link" },
-        { icon: Plus,      label: "Post New Job",      path: "/dashboard/company/post-job",  type: "link" },
-        { icon: UserCheck, label: "Applicants Tracker",path: "/dashboard/company/applicants",type: "link" },
+        { icon: Briefcase, label: "My Jobs",            path: "/dashboard/company/my-jobs",   type: "link" },
+        { icon: Plus,      label: "Post New Job",       path: "/dashboard/company/post-job",  type: "link" },
+        { icon: UserCheck, label: "Applicants Tracker", path: "/dashboard/company/applicants",type: "link" },
+        { icon: Video,     label: "Video Interview",    path: "/dashboard/company/video-call",type: "link" },
       ],
     },
     {

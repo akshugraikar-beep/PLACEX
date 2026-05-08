@@ -61,6 +61,7 @@ const HRDashboardLayout = () => {
       "/dashboard/hr/insights":      "Company Insights",
       "/dashboard/hr/collaboration":  "Institution Collaboration",
       "/dashboard/hr/reports":       "Generate Reports",
+      "/dashboard/hr/video-call":    "Video Interview Room",
       "/dashboard/hr/profile":       "Company Profile",
       "/dashboard/hr/settings":      "Settings",
     };
@@ -79,10 +80,10 @@ const HRDashboardLayout = () => {
         toastOptions={{ duration: 5000, style: { background: "#1e1b4b", color: "#fff", border: "1px solid rgba(124,58,237,0.3)" } }}
       />
 
-      <div className="flex h-screen overflow-hidden" style={{ background: "#070714" }}>
+      <div className="flex min-h-screen" style={{ background: "#070714" }}>
         <HRSidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
 
-        <div className={`flex flex-col flex-1 min-h-0 w-full transition-[margin] duration-300 ease-out ${
+        <div className={`flex-1 flex flex-col transition-all duration-300 ${
           !isMobile ? (sidebarExpanded ? "ml-64" : "ml-20") : "ml-0"
         }`}>
           {/* Topbar */}
@@ -152,7 +153,7 @@ const HRDashboardLayout = () => {
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "#1e293b transparent" }}>
+          <main className="flex-1 min-h-screen">
             <Outlet />
           </main>
         </div>

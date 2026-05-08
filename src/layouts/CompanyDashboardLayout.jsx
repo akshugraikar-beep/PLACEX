@@ -65,6 +65,7 @@ const CompanyDashboardLayout = () => {
       "/dashboard/company/insights": "Company Insights",
       "/dashboard/company/collaboration": "Institution Collaboration",
       "/dashboard/company/reports": "Generate Reports",
+      "/dashboard/company/video-call": "Video Interview Room",
       "/dashboard/company/settings": "Settings",
     };
     return titleMap[path] || "Company Dashboard";

@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, Users, BarChart3, Plus, UserCheck, TrendingUp,
   Building2, FileText, Settings, LogOut, ChevronLeft, ChevronRight,
-  Moon, Sun, Search, Briefcase, X, Brain, Calendar, Star, User,
+  Moon, Sun, Search, Briefcase, X, Brain, Calendar, Star, User, Video,
 } from "lucide-react";
 
 const HRSidebar = ({ isExpanded, setIsExpanded }) => {
@@ -62,9 +62,10 @@ const HRSidebar = ({ isExpanded, setIsExpanded }) => {
     {
       icon: Briefcase, label: "Recruitment", type: "section", sectionKey: "recruitment",
       children: [
-        { icon: Briefcase, label: "My Jobs",        path: "/dashboard/hr/my-jobs",   type: "link" },
-        { icon: Plus,      label: "Post New Job",   path: "/dashboard/hr/post-job",  type: "link" },
-        { icon: Calendar,  label: "Interviews",     path: "/dashboard/hr/interviews",type: "link" },
+        { icon: Briefcase, label: "My Jobs",         path: "/dashboard/hr/my-jobs",    type: "link" },
+        { icon: Plus,      label: "Post New Job",    path: "/dashboard/hr/post-job",   type: "link" },
+        { icon: Calendar,  label: "Interviews",      path: "/dashboard/hr/interviews", type: "link" },
+        { icon: Video,     label: "Video Interview", path: "/dashboard/hr/video-call", type: "link" },
       ],
     },
     {

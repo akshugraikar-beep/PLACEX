@@ -53,7 +53,13 @@ const VideoCallPage = () => {
 
   const domain = "meet.jit.si";
   const roomUrl = `https://${domain}/${roomId}`;
-  const shareUrl = `${window.location.origin}/dashboard/employee/video-call?room=${roomId}`;
+  // Detect which portal we are in
+  const portalBase = window.location.pathname.startsWith("/dashboard/hr")
+    ? "/dashboard/hr"
+    : window.location.pathname.startsWith("/dashboard/company")
+    ? "/dashboard/company"
+    : "/dashboard/employee";
+  const shareUrl = `${window.location.origin}${portalBase}/video-call?room=${roomId}`;
 
   // ── Load Jitsi script once ────────────────────────────────────────────────
   useEffect(() => {
