@@ -499,7 +499,6 @@ body {
 
 /* HR Portal page wrapper */
 .hr-page {
-  min-height: 100vh;
   padding: 1.5rem;
   background: var(--hr-page-bg-grad);
 }
