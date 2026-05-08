@@ -49,6 +49,10 @@ import InstitutionSettings from "./pages/Institution/Settings";
 
 import CompanyDashboardLayout from "./layouts/CompanyDashboardLayout";
 import CompanyDashboard from "./pages/company/CompanyDashboard";
+import HRDashboard from "./pages/company/HRDashboard";
+import CandidateManagement from "./pages/company/CandidateManagement";
+import AIAnalysis from "./pages/company/AIAnalysis";
+import HRAnalytics from "./pages/company/HRAnalytics";
 import Applicants from "./pages/company/Applicants";
 import Collaboration from "./pages/company/Collaboration";
 import Employees from "./pages/company/Employees";
@@ -138,7 +142,7 @@ const AppWrapper = () => {
               <Route path="settings" element={<InstitutionSettings />} />
             </Route>
 
-            {/* Company Dashboard */}
+            {/* Company / HR Dashboard */}
             <Route
               path="/dashboard/company"
               element={
@@ -147,7 +151,12 @@ const AppWrapper = () => {
                 </ProtectedRoute>
               }
             >
-              <Route index element={<CompanyDashboard />} />
+              <Route index element={<HRDashboard />} />
+              <Route path="candidates" element={<CandidateManagement />} />
+              <Route path="ai-analysis" element={<AIAnalysis />} />
+              <Route path="hr-analytics" element={<HRAnalytics />} />
+              <Route path="shortlisted" element={<Applicants />} />
+              <Route path="interviews" element={<Applicants />} />
               <Route path="profile" element={<CompanyProfile />} />
               <Route path="employees" element={<Employees />} />
               <Route path="performance" element={<Performance />} />
