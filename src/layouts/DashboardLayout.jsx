@@ -86,7 +86,7 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className="flex h-screen bg-slate-100 dark:bg-slate-900">
+    <div className="flex bg-slate-100 dark:bg-slate-900 min-h-screen">
       <Sidebar
         isExpanded={sidebarExpanded}
         setIsExpanded={setSidebarExpanded}
@@ -161,7 +161,7 @@ const DashboardLayout = () => {
           </div>
         </header>
 
-        <main className="flex-1 min-h-screen bg-slate-50 dark:bg-slate-900 ">
+        <main className="flex-1 min-h-screen bg-slate-50 dark:bg-slate-900">
           <Outlet />
         </main>
       </div>

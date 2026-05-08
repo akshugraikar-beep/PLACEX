@@ -1,4 +1,5 @@
 import Job from "../models/Jobs.js";
+import Student from "../models/Student.js";
 import logger from '../utils/logger.js';
 
 /* -------------------- Helpers -------------------- */
@@ -424,6 +425,76 @@ export const getCompanyJobs = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server Error: Could not fetch company jobs",
+      error: error.message,
+    });
+  }
+};
+
+// Get recommended jobs for student based on their interestedDomain
+export const getRecommendedJobs = async (req, res) => {
+  try {
+    const { userId } = req.user;
+
+    // Fetch student's interested domain
+    const student = await Student.findById(userId).select("interestedDomain");
+    const domain = student?.interestedDomain;
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Build filter: if domain is set, match jobs whose domain contains it
+    const filterQuery = { status: "Open" };
+    if (domain) {
+      // Map interest like "Frontend Developer" -> search domain field for "Frontend"
+      const keyword = domain.split(" ")[0]; // "Frontend", "Backend", "Software", etc.
+      filterQuery.domain = new RegExp(keyword, "i");
+    }
+
+    const [totalJobs, jobs] = await Promise.all([
+      Job.countDocuments(filterQuery),
+      Job.find(filterQuery)
+        .populate({ path: "company", select: "name email industry website profileImage" })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+    ]);
+
+    // If domain-matched jobs exist, return them; otherwise return all open jobs
+    let finalJobs = jobs;
+    let finalTotal = totalJobs;
+    let isRecommended = !!domain;
+
+    if (domain && jobs.length === 0) {
+      // Fallback to all open jobs
+      const allJobs = await Job.find({ status: "Open" })
+        .populate({ path: "company", select: "name email industry website profileImage" })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+      finalTotal = await Job.countDocuments({ status: "Open" });
+      finalJobs = allJobs;
+      isRecommended = false;
+    }
+
+    res.status(200).json({
+      success: true,
+      interestedDomain: domain || null,
+      isRecommended,
+      message: isRecommended
+        ? `Showing jobs matched to your interest: ${domain}`
+        : "Showing all available jobs",
+      count: finalJobs.length,
+      totalJobs: finalTotal,
+      currentPage: page,
+      totalPages: Math.ceil(finalTotal / limit),
+      jobs: finalJobs,
+    });
+  } catch (error) {
+    logger.error("Error fetching recommended jobs:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error: Could not fetch recommended jobs.",
       error: error.message,
     });
   }

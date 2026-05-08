@@ -68,7 +68,7 @@ const InstitutionDashboardLayout = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
       <InstitutionSidebar 
         isExpanded={sidebarExpanded} 
         setIsExpanded={setSidebarExpanded}
@@ -76,7 +76,7 @@ const InstitutionDashboardLayout = () => {
       <div className={`transition-all duration-300 flex-1 flex flex-col ${
         sidebarExpanded ? "ml-64" : "ml-20"
       }`}>
-        <header className="bg-white dark:bg-gray-800 shadow-sm border-b px-6 py-4 sticky top-0 z-40">
+        <header className="bg-white dark:bg-gray-800 shadow-sm border-b dark:border-gray-700 px-6 py-4 sticky top-0 z-40 transition-colors duration-300">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
               {getPageTitle()}
@@ -89,7 +89,7 @@ const InstitutionDashboardLayout = () => {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
           <Outlet />
         </main>
       </div>

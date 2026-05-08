@@ -64,9 +64,11 @@ const SimpleAuthPage = () => {
       if (role === "student") {
         navigate("/dashboard");
       } else if (role === "institution") {
-        navigate("/institution-dashboard");
+        navigate("/dashboard/institution");
       } else if (role === "company") {
-        navigate("/company-dashboard");
+        navigate("/dashboard/company");
+      } else if (role === "employee") {
+        navigate("/dashboard/employee");
       } else {
         navigate("/dashboard");
       }

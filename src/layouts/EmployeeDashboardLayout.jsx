@@ -90,7 +90,7 @@ const EmployeeDashboardLayout = () => {
   };
 
   return (
-    <div className="flex h-screen bg-slate-100 dark:bg-slate-900">
+    <div className="flex bg-slate-100 dark:bg-slate-900 min-h-screen">
       <EmployeeSidebar
         isExpanded={sidebarExpanded}
         setIsExpanded={setSidebarExpanded}

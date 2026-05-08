@@ -2,24 +2,6 @@
 
 import { useEffect, useState, useRef } from "react"
 
-const TrailPoint = {
-  x: 0,
-  y: 0,
-  id: 0,
-  timestamp: 0,
-}
-
-const Bubble = {
-  x: 0,
-  y: 0,
-  id: 0,
-  timestamp: 0,
-  vx: 0,
-  vy: 0,
-  size: 0,
-  life: 0,
-}
-
 const smoothStep = (t) => t * t * (3 - 2 * t)
 const lerp = (start, end, factor) => start + (end - start) * factor
 const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4)
@@ -39,7 +21,6 @@ export default function CursorTrail() {
     const targetX = e.clientX
     const targetY = e.clientY
 
-    // Use higher lerp factor for snappier movement
     smoothMousePos.current.x = lerp(smoothMousePos.current.x, targetX, CURSOR_LERP_FACTOR)
     smoothMousePos.current.y = lerp(smoothMousePos.current.y, targetY, CURSOR_LERP_FACTOR)
 
@@ -96,7 +77,6 @@ export default function CursorTrail() {
     let rafId
     let lastUpdate = Date.now()
     const animate = () => {
-      // Throttle animation frame updates for performance
       const now = Date.now()
       if (now - lastUpdate > 24) {
         setAnimationFrame((prev) => prev + 1)
@@ -108,11 +88,11 @@ export default function CursorTrail() {
             ...bubble,
             x: bubble.x + bubble.vx,
             y: bubble.y + bubble.vy,
-            vy: bubble.vy - 0.02, // gravity effect
+            vy: bubble.vy - 0.02,
           }))
           .filter((bubble) => Date.now() - bubble.timestamp < bubble.life),
       )
-    
+
       rafId = requestAnimationFrame(animate)
     }
     rafId = requestAnimationFrame(animate)
@@ -214,20 +194,20 @@ export default function CursorTrail() {
 
         const colorSchemes = isDarkMode
           ? [
-              { r: 139, g: 92, b: 246 }, // Purple
-              { r: 59, g: 130, b: 246 }, // Blue
-              { r: 16, g: 185, b: 129 }, // Emerald
-              { r: 245, g: 158, b: 11 }, // Amber
-              { r: 236, g: 72, b: 153 }, // Pink
-              { r: 34, g: 197, b: 94 }, // Green
+              { r: 139, g: 92, b: 246 },
+              { r: 59, g: 130, b: 246 },
+              { r: 16, g: 185, b: 129 },
+              { r: 245, g: 158, b: 11 },
+              { r: 236, g: 72, b: 153 },
+              { r: 34, g: 197, b: 94 },
             ]
           : [
-              { r: 124, g: 58, b: 237 }, // Purple
-              { r: 37, g: 99, b: 235 }, // Blue
-              { r: 5, g: 150, b: 105 }, // Emerald
-              { r: 217, g: 119, b: 6 }, // Amber
-              { r: 219, g: 39, b: 119 }, // Pink
-              { r: 22, g: 163, b: 74 }, // Green
+              { r: 124, g: 58, b: 237 },
+              { r: 37, g: 99, b: 235 },
+              { r: 5, g: 150, b: 105 },
+              { r: 217, g: 119, b: 6 },
+              { r: 219, g: 39, b: 119 },
+              { r: 22, g: 163, b: 74 },
             ]
 
         const color = colorSchemes[index % colorSchemes.length]

@@ -1,4 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
+import { getTodayKey } from "../../hooks/useDailyLimit";
+import { addScore } from "../../hooks/useScoring";
 import ResponsiveLayout from "../../components/Coding/ResponsiveLayout";
 import SidebarProblemList from "../../components/Coding/SidebarProblemList";
 import ProblemDescription from "../../components/Coding/ProblemDescription";
@@ -468,6 +470,33 @@ const Coding = () => {
   const [isEditorReady, setIsEditorReady] = useState(false);
   const [savedCode, setSavedCode] = useState({});
   const [isLocked, setIsLocked] = useState(false);
+  // Tracks problems locked this session (solved OR timed-out) so re-clicking card is blocked
+  const [timedOutIds, setTimedOutIds] = useState(new Set());
+  const selectedProblemRef = useRef(null); // used inside timer callback (avoids stale closure)
+
+  // ── Daily 5-problem batch system ──────────────────────────────────────────
+  // Each day shows the next 5 problems. Batch advances the next day.
+  const getDailyBatchIndex = () => {
+    const today = getTodayKey();
+    let startDate = localStorage.getItem('PlaceX_coding_start_date');
+    if (!startDate) {
+      startDate = today;
+      localStorage.setItem('PlaceX_coding_start_date', today);
+    }
+    const diff = Math.floor(
+      (new Date(today) - new Date(startDate)) / (1000 * 60 * 60 * 24)
+    );
+    return diff; // 0 = day 1 (Q1-5), 1 = day 2 (Q6-10), …
+  };
+
+  const batchIndex = getDailyBatchIndex();
+  const dailyBatch = ALL_PROBLEMS.slice(batchIndex * 5, batchIndex * 5 + 5);
+
+  // Which of today's 5 have been solved this session (resets on refresh)
+  // Session-only: cards unlock on refresh so the student can retry
+  const [dailySolvedIds, setDailySolvedIds] = useState(() => new Set());
+  const isBatchDone = dailyBatch.every(p => dailySolvedIds.has(p.id));
+  // ──────────────────────────────────────────────────────────────────────────
 
   // Points — 5 per solved question, persisted in localStorage
   const [totalPoints, setTotalPoints] = useState(() =>
@@ -488,6 +517,10 @@ const Coding = () => {
         if (prev <= 1) {
           clearInterval(timerRef.current);
           setIsLocked(true);
+          // Permanently lock this problem (timed out)
+          if (selectedProblemRef.current !== null) {
+            setTimedOutIds(s => new Set([...s, selectedProblemRef.current]));
+          }
           return 0;
         }
         return prev - 1;
@@ -529,14 +562,21 @@ const Coding = () => {
   };
 
   const handleSelectProblem = useCallback((problem) => {
+    // If already solved today or timed out — show lock screen, never restart
+    const alreadyLocked = dailySolvedIds.has(problem.id) || timedOutIds.has(problem.id);
+    selectedProblemRef.current = problem.id;
     setSelectedProblem(problem);
     setResult(null);
-    // If problem is solved, show saved code. Otherwise, show blank starter code.
+    setActiveTab("description");
+    if (alreadyLocked) {
+      clearInterval(timerRef.current);
+      setIsLocked(true);
+      return;
+    }
     const restored = savedCode[problem.id];
     setCode(restored || problem.starterCode || "# Write your Python solution here\n");
-    setActiveTab("description");
     startTimer();
-  }, [savedCode, startTimer]);
+  }, [savedCode, startTimer, dailySolvedIds, timedOutIds]);
 
   const handleCheckAnswer = useCallback(async () => {
     if (!selectedProblem || !code.trim() || isLocked) return;
@@ -556,16 +596,24 @@ const Coding = () => {
           return next;
         });
         setTotalPoints(prev => {
-          const next = prev + 5;
+          const next = prev + 3;
           localStorage.setItem("PlaceX_coding_points", String(next));
           return next;
         });
+        addScore('coding', 3); // 3 pts per solved coding question
+        // Lock this problem for the rest of this session (session-only — resets on refresh)
+        setDailySolvedIds(prev => {
+          const next = new Set(prev);
+          next.add(selectedProblem.id);
+          return next; // NOT written to localStorage — refresh clears it
+        });
         clearInterval(timerRef.current);
-        setIsLocked(false);
+        setIsLocked(true); // lock permanently after solving — can't retype
       }
     }
     setIsRunning(false);
     setActiveTab("solutions");
+
   }, [code, selectedProblem, problems, isLocked]);
 
 
@@ -599,28 +647,138 @@ const Coding = () => {
         </button>
       </div>
 
-      {/* ── Main Coding Layout ── */}
-      <ResponsiveLayout
-        sidebar={
-          <SidebarProblemList
-            problems={problems}
-            filteredProblems={filteredProblems}
-            selectedProblem={selectedProblem}
-            setSelectedProblem={handleSelectProblem}
-            userProgress={userProgress}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            selectedDifficulty={selectedDifficulty}
-            setSelectedDifficulty={setSelectedDifficulty}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            categories={categories}
-            difficulties={difficulties}
-          />
-        }
-        main={
-          <div className="flex-1 min-h-0 flex flex-col">
-            {selectedProblem ? (
+      {/* ── Main Layout: Daily Cards (left) + Editor (right) ── */}
+      <div className="flex h-screen overflow-hidden">
+
+        {/* ── Left Panel: Today's 5 Problems ── */}
+        <div className="w-72 flex-shrink-0 border-r dark:border-gray-700 bg-white dark:bg-gray-800 flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="px-4 pt-5 pb-3 border-b dark:border-gray-700">
+            <h2 className="text-base font-bold text-gray-800 dark:text-gray-100">Today's Problems</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              {dailySolvedIds.size} / 5 solved today
+            </p>
+            {/* 5-dot progress */}
+            <div className="flex gap-1.5 mt-2">
+              {dailyBatch.map(p => (
+                <div
+                  key={p.id}
+                  className={`flex-1 h-1.5 rounded-full transition-colors duration-300 ${
+                    dailySolvedIds.has(p.id) ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-gray-600'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Cards */}
+          <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
+            {isBatchDone ? (
+              <div className="flex-1 flex flex-col items-center justify-center text-center px-4 py-8">
+                <span className="text-4xl mb-3">🎉</span>
+                <p className="font-semibold text-gray-700 dark:text-gray-200 text-sm">All done for today!</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">New problems at 12:01 AM</p>
+              </div>
+            ) : (
+              dailyBatch.map((problem, idx) => {
+                const isSolved = dailySolvedIds.has(problem.id);
+                const isSelected = selectedProblem?.id === problem.id;
+                return (
+                  <button
+                    key={problem.id}
+                    onClick={() => handleSelectProblem(problem)}
+                    className={`w-full text-left rounded-xl border-2 p-3 transition-all duration-200 ${
+                      isSelected
+                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30'
+                        : isSolved
+                        ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500 hover:shadow-sm'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                        isSolved
+                          ? 'bg-emerald-500 text-white'
+                          : isSelected
+                          ? 'bg-purple-500 text-white'
+                          : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
+                      }`}>
+                        {isSolved ? <CheckCircle className="w-3.5 h-3.5" /> : idx + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-gray-800 dark:text-gray-100 text-sm truncate">{problem.title}</p>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
+                            problem.difficulty === 'Easy'
+                              ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300'
+                              : problem.difficulty === 'Medium'
+                              ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300'
+                              : 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
+                          }`}>
+                            {problem.difficulty}
+                          </span>
+                          <span className="text-xs text-gray-400">{problem.category}</span>
+                        </div>
+                      </div>
+                      {isSolved && (
+                        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex-shrink-0">✓</span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })
+            )}
+          </div>
+
+          {/* Points footer */}
+          <div className="px-4 py-3 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+              <span className="flex items-center gap-1">
+                <Trophy className="w-3.5 h-3.5 text-yellow-500" />
+                {totalPoints} XP total
+              </span>
+              <span>{problems.filter(p => p.solved).length} solved all time</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Right Panel: Editor / Placeholder ── */}
+        <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+          {selectedProblem ? (
+            isLocked ? (
+              /* ── Full Question Lock Screen ── */
+              <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-gray-800 h-full">
+                <div className="text-center max-w-sm px-6">
+                  {selectedProblem.solved ? (
+                    <>
+                      <div className="w-24 h-24 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center mx-auto mb-5 text-5xl shadow-inner">
+                        ✅
+                      </div>
+                      <h2 className="text-2xl font-bold text-emerald-700 dark:text-emerald-400 mb-2">Problem Solved!</h2>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mb-1 font-medium">{selectedProblem.title}</p>
+                      <p className="text-gray-500 dark:text-gray-500 text-sm mb-6">
+                        Great job! This question is now locked.<br />Select the next problem from the panel.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-24 h-24 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center mx-auto mb-5 text-5xl shadow-inner">
+                        🔒
+                      </div>
+                      <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-2">Time's Up!</h2>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mb-1 font-medium">{selectedProblem.title}</p>
+                      <p className="text-gray-500 dark:text-gray-500 text-sm mb-6">
+                        The 3-minute timer has expired.<br />This question is locked — pick another one.
+                      </p>
+                    </>
+                  )}
+                  <div className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">← Select a problem from the left panel</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* ── Normal: Problem Header + Editor ── */
               <div className="flex flex-col h-full min-h-0">
 
                 {/* Problem Header */}
@@ -634,28 +792,18 @@ const Coding = () => {
                       <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
                         🐍 Python
                       </span>
-                      {selectedProblem.solved && (
-                        <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
-                          <CheckCircle className="w-4 h-4" />
-                          <span className="text-sm font-medium">Solved</span>
-                        </div>
-                      )}
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
-                      {/* Timer */}
                       <div className={`flex items-center gap-1.5 font-mono font-bold text-base px-3 py-1 rounded-xl bg-gray-100 dark:bg-gray-700 ${timerColor}`}>
                         <Clock className="w-4 h-4" />
                         {formatTime(timeLeft)}
                       </div>
-                      {/* Acceptance */}
                       <div className="flex items-center gap-1 text-sm text-gray-500">
                         <TrendingUp className="w-4 h-4" />
                         <span>{selectedProblem.acceptance}%</span>
                       </div>
                     </div>
                   </div>
-
-                  {/* Tabs */}
                   <div className="flex gap-6">
                     {["description", "solutions"].map(tab => (
                       <button
@@ -675,26 +823,17 @@ const Coding = () => {
 
                 {/* Split Panel */}
                 <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
-
-                  {/* Left: Description / Results */}
                   <div className="w-full md:w-1/2 border-r dark:border-gray-700 overflow-y-auto bg-white dark:bg-gray-800 p-4 md:p-5 min-h-[280px]">
                     {(activeTab === "description" && !isRunning) && <ProblemDescription problem={selectedProblem} />}
                     {(activeTab === "solutions" || isRunning) && (
                       <ResultPanel result={result} problem={selectedProblem} isRunning={isRunning} />
                     )}
                   </div>
-
-                  {/* Right: Python Editor */}
                   <div className="w-full md:w-1/2 flex flex-col min-h-[350px] md:min-h-0">
-                    {isLocked && (
-                      <div className="bg-red-50 dark:bg-red-900/30 border-b border-red-200 dark:border-red-700 px-4 py-2">
-                        <span className="text-red-600 dark:text-red-400 font-semibold text-sm">🔒 Time's up — editor is locked.</span>
-                      </div>
-                    )}
                     <div className="flex-1 min-h-0">
                       <CodingEditor
                         code={code}
-                        onChange={val => !isLocked && setCode(val || "")}
+                        onChange={val => setCode(val || "")}
                         isDarkMode={isDarkMode}
                         problem={selectedProblem}
                         language="python"
@@ -704,8 +843,8 @@ const Coding = () => {
                           editor.addCommand(2048 + 52, () => {});
                           editor.addCommand(256 + 52, () => {});
                         }}
-                        heading={isLocked ? "🔒 Locked — Time's Up" : "Python Editor"}
-                        readOnly={isLocked}
+                        heading="Python Editor"
+                        readOnly={false}
                       />
                     </div>
                     <CodingActions
@@ -715,33 +854,33 @@ const Coding = () => {
                       saveCode={handleSaveCode}
                       isRunning={isRunning}
                       runLabel="Run Code"
-                      disabled={isLocked}
+                      disabled={false}
                     />
                   </div>
+                </div>
+              </div>
+            )
+          ) : (
 
+            /* No problem selected — prompt */
+            <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-gray-800">
+              <div className="text-center max-w-xs px-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                  🐍
                 </div>
+                <h2 className="text-lg font-bold mb-2 text-gray-900 dark:text-gray-100">Select a Problem</h2>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  Pick one of today's 5 problems from the left panel to start coding.
+                </p>
               </div>
-            ) : (
-              /* Empty State */
-              <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-gray-800 min-h-[60vh]">
-                <div className="text-center max-w-sm px-4">
-                  <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-5 text-4xl">
-                    🐍
-                  </div>
-                  <h2 className="text-xl font-bold mb-3 text-gray-900 dark:text-gray-100">Ready to Learn Python?</h2>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    Pick a problem from the sidebar and click <strong>Run Code</strong> to check your answer.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        }
-        isSidebarOpen={isSidebarOpen}
-        onToggleSidebar={() => setIsSidebarOpen(p => !p)}
-      />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
 
 export default Coding;
+
+

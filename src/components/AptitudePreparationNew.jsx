@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Brain, RotateCcw, Clock } from "lucide-react";
+import { useDailyLimit, getTodayKey } from "../hooks/useDailyLimit";
+import { addScore } from "../hooks/useScoring";
 
 // QUANTITATIVE APTITUDE - 100 QUESTIONS
 const QUANTITATIVE_QUESTIONS = [
@@ -328,7 +330,30 @@ const AptitudePreparationNew = () => {
   const [quizQuestions, setQuizQuestions] = useState([]);
   const [timeLeft, setTimeLeft] = useState(60);
   const [isTimedOut, setIsTimedOut] = useState(false);
-  const [usedQuestionHistory, setUsedQuestionHistory] = useState([]); // Track last 5 sections
+  const [usedQuestionHistory, setUsedQuestionHistory] = useState([]);
+
+  // ── Daily limit: each section can be attempted once per day ──
+  const today = getTodayKey();
+  const getDailySectionKey = (section) => `PlaceX_aptitude_${section}_${today}`;
+
+  const getSectionDoneData = (section) => {
+    try {
+      return JSON.parse(localStorage.getItem(getDailySectionKey(section)) || 'null');
+    } catch { return null; }
+  };
+
+  const markSectionDone = (section, score, total) => {
+    try {
+      localStorage.setItem(getDailySectionKey(section), JSON.stringify({ score, total, done: true }));
+    } catch {}
+  };
+
+  // Check which sections are done today on first render
+  const [doneSections, setDoneSections] = useState(() => ({
+    quantitative: getSectionDoneData('quantitative'),
+    logical:      getSectionDoneData('logical'),
+    verbal:       getSectionDoneData('verbal'),
+  }));
 
   // Shuffle options while keeping track of correct answer
   const shuffleQuestionOptions = (question) => {
@@ -401,9 +426,10 @@ const AptitudePreparationNew = () => {
   }, [isTimedOut]);
 
   const startQuiz = (section) => {
+    if (doneSections[section]?.done) return; // already done today
     const questions = getQuestionsBySection(section);
     const questionIds = questions.map(q => q.id);
-    
+
     setQuizQuestions(questions);
     setSelectedSection(section);
     setQuizStarted(true);
@@ -412,11 +438,10 @@ const AptitudePreparationNew = () => {
     setShowScore(false);
     setTimeLeft(60);
     setIsTimedOut(false);
-    
-    // Update history: add new questions to history, keep only last 5 sections
+
     setUsedQuestionHistory(prev => {
       const updated = [questionIds, ...prev];
-      return updated.slice(0, 5); // Keep only last 5 sections
+      return updated.slice(0, 5);
     });
   };
 
@@ -466,8 +491,21 @@ const AptitudePreparationNew = () => {
     setQuizQuestions([]);
     setTimeLeft(60);
     setIsTimedOut(false);
-    // Keep usedQuestionHistory to prevent repeating in next 5 sections
   };
+
+  // When score screen mounts, persist result and update doneSections
+  useEffect(() => {
+    if (showScore && selectedSection) {
+      const score = calculateScore();
+      markSectionDone(selectedSection, score, quizQuestions.length);
+      setDoneSections(prev => ({
+        ...prev,
+        [selectedSection]: { score, total: quizQuestions.length, done: true },
+      }));
+      // 1 pt per correct aptitude answer
+      if (score > 0) addScore('aptitude', score);
+    }
+  }, [showScore]); // eslint-disable-line
 
   // SECTION SELECTION SCREEN
   if (!quizStarted) {
@@ -481,24 +519,46 @@ const AptitudePreparationNew = () => {
 
           {/* Section Cards */}
           <div className="grid grid-cols-3 gap-10 mb-12 w-full mt-16">
-            {SECTIONS.map((section) => (
-              <div
-                key={section.key}
-                className={`bg-gradient-to-br ${section.color} rounded-2xl p-10 text-white cursor-pointer transform hover:scale-105 hover:shadow-2xl transition-all duration-300 shadow-xl flex flex-col items-center justify-between h-96`}
-                onClick={() => startQuiz(section.key)}
-              >
-                <div className="flex-1 flex items-center justify-center">
-                  <h3 className="text-3xl font-bold text-center leading-tight">{section.name}</h3>
+            {SECTIONS.map((section) => {
+              const sectionData = doneSections[section.key];
+              const isDone = sectionData?.done;
+              return (
+                <div
+                  key={section.key}
+                  className={`bg-gradient-to-br ${section.color} rounded-2xl p-10 text-white transform transition-all duration-300 shadow-xl flex flex-col items-center justify-between h-96 ${
+                    isDone ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer hover:scale-105 hover:shadow-2xl'
+                  }`}
+                  onClick={() => !isDone && startQuiz(section.key)}
+                >
+                  <div className="flex-1 flex items-center justify-center">
+                    <h3 className="text-3xl font-bold text-center leading-tight">{section.name}</h3>
+                  </div>
+
+                  {isDone ? (
+                    <div className="flex flex-col items-center gap-3 w-full my-4">
+                      <div className="flex items-center gap-2 bg-white/20 rounded-xl px-4 py-2">
+                        <span className="text-2xl">🔒</span>
+                        <span className="font-bold text-lg">Done today!</span>
+                      </div>
+                      <p className="text-white/80 text-sm font-medium">
+                        Score: {sectionData.score}/{sectionData.total} correct
+                      </p>
+                      <p className="text-white/60 text-xs">Resets at 12:01 AM</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-center gap-3 w-full my-8">
+                        <Clock size={22} />
+                        <p className="font-semibold text-center text-lg">10 Questions • 60 sec each</p>
+                      </div>
+                      <button className="bg-white text-gray-900 font-bold px-8 py-3 rounded-lg hover:bg-gray-100 transition-all hover:shadow-lg w-full text-lg">
+                        Start Quiz →
+                      </button>
+                    </>
+                  )}
                 </div>
-                <div className="flex items-center justify-center gap-3 w-full my-8">
-                  <Clock size={22} />
-                  <p className="font-semibold text-center text-lg">10 Questions • 60 sec each</p>
-                </div>
-                <button className="bg-white text-gray-900 font-bold px-8 py-3 rounded-lg hover:bg-gray-100 transition-all hover:shadow-lg w-full text-lg">
-                  Start Quiz →
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

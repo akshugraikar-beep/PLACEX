@@ -1,9 +1,11 @@
 import verifyToken from "../middleware/authMiddleware.js";
 import express from "express";
 const router = express.Router();
-import { createJob,updateJob,getJobs ,deleteJob,applyForJob,getAppliedJobs,withdrawApplication,getCompanyJobs} from "../controllers/jobController.js";
+import { createJob,updateJob,getJobs ,deleteJob,applyForJob,getAppliedJobs,withdrawApplication,getCompanyJobs, getRecommendedJobs} from "../controllers/jobController.js";
 
 router.get("/",getJobs)
+router.get("/recommended", verifyToken(["student"]), getRecommendedJobs); // Personalised jobs for student
+
 
 // secured routes
 router.post("/",verifyToken(["company"]),createJob)

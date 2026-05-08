@@ -34,7 +34,7 @@ const hashPassword = (password) => bcrypt.hash(password, 10);
 // ---------------- REGISTER ----------------
 export const registerStudent = async (req, res) => {
   try {
-    const { fullName, university, major, email, password, role } = req.body;
+    const { fullName, university, major, email, password, role, interestedDomain } = req.body;
     await checkEmailExists(email);
     const hashedPassword = await hashPassword(password);
 
@@ -45,6 +45,7 @@ export const registerStudent = async (req, res) => {
       email,
       password: hashedPassword,
       role,
+      ...(interestedDomain && { interestedDomain }),
     });
     res.status(201).json({ message: "Student registered successfully" });
   } catch (error) {
@@ -245,6 +246,7 @@ export const updateProfile = async (req, res) => {
           "education",
           "major",
           "university",
+          "interestedDomain",
         ];
         break;
       case "institution":

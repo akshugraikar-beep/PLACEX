@@ -6,7 +6,26 @@ import {
   Brain,
   Clock,
   Users2,
+  Briefcase,
 } from "lucide-react";
+
+const INTERESTED_DOMAINS = [
+  "Frontend Developer",
+  "Backend Developer",
+  "Full Stack Developer",
+  "Mobile App Developer",
+  "Software Tester / QA",
+  "DevOps Engineer",
+  "Data Scientist",
+  "Machine Learning Engineer",
+  "UI/UX Designer",
+  "Cybersecurity Analyst",
+  "Cloud Engineer",
+  "Database Administrator",
+  "Embedded Systems Engineer",
+  "Business Analyst",
+  "Other",
+];
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -25,6 +44,7 @@ export default function StudentForm() {
     fullName: "",
     university: "",
     major: "",
+    interestedDomain: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -79,11 +99,12 @@ export default function StudentForm() {
       !formData.fullName ||
       !formData.university ||
       !formData.major ||
+      !formData.interestedDomain ||
       !formData.email ||
       !formData.password ||
       !formData.confirmPassword
     ) {
-      setError("All fields are required");
+      setError("All fields are required, including Interested Domain");
       setLoading(false);
       return;
     }
@@ -333,6 +354,38 @@ export default function StudentForm() {
                 }
                 required
               />
+
+              {/* ---- Interested Domain Dropdown ---- */}
+              <div>
+                <label
+                  htmlFor="student-interested-domain"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Briefcase className="w-4 h-4 text-purple-500" />
+                    Interested Domain <span className="text-red-500">*</span>
+                  </span>
+                </label>
+                <select
+                  id="student-interested-domain"
+                  value={formData.interestedDomain}
+                  onChange={(e) =>
+                    setFormData({ ...formData, interestedDomain: e.target.value })
+                  }
+                  required
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer"
+                >
+                  <option value="" disabled>
+                    -- Select your interested domain --
+                  </option>
+                  {INTERESTED_DOMAINS.map((domain) => (
+                    <option key={domain} value={domain}>
+                      {domain}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* ---- End Interested Domain Dropdown ---- */}
 
               <FormInput
                 id="student-email"

@@ -46,8 +46,12 @@ import {
   MessageSquare,
   Menu,
   X,
+  Mic,
+  AlarmClock,
+  Code,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getScoreSnapshot } from "../../hooks/useScoring";
 
 // NEW: A custom hook to detect clicks outside the notification panel
 const useOnClickOutside = (ref, handler) => {
@@ -65,6 +69,140 @@ const useOnClickOutside = (ref, handler) => {
       document.removeEventListener("touchstart", listener);
     };
   }, [ref, handler]);
+};
+
+// ===== Scheduled Interview Reminder Widget =====
+const ScheduledInterviewReminder = () => {
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    const load = () => {
+      try {
+        const saved = JSON.parse(localStorage.getItem('interviewCalendarEvents')) || [];
+        // Sort upcoming first
+        const sorted = saved.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
+        setEvents(sorted);
+      } catch { setEvents([]); }
+    };
+    load();
+    // Re-sync if user navigates back from interview page
+    window.addEventListener('storage', load);
+    const t = setInterval(load, 30000); // refresh every 30s
+    return () => { window.removeEventListener('storage', load); clearInterval(t); };
+  }, []);
+
+  const now = new Date();
+  const upcoming = events.filter(e => new Date(e.dateTime) > now);
+  const past = events.filter(e => new Date(e.dateTime) <= now);
+
+  const getCountdown = (dateTime) => {
+    const diff = new Date(dateTime) - now;
+    const hrs = Math.floor(diff / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    if (hrs >= 24) {
+      const days = Math.floor(hrs / 24);
+      return `in ${days} day${days > 1 ? 's' : ''}`;
+    }
+    if (hrs > 0) return `in ${hrs}h ${mins}m`;
+    return `in ${mins}m`;
+  };
+
+  const isWithin24h = (dateTime) => {
+    const diff = new Date(dateTime) - now;
+    return diff > 0 && diff < 86400000;
+  };
+
+  if (events.length === 0) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border dark:border-gray-700 p-4 sm:p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg sm:text-xl font-semibold flex items-center gap-2">
+            <AlarmClock className="w-5 h-5 text-purple-500" />
+            Practice Reminders
+          </h3>
+          <a href="/dashboard/interview-practice" className="text-xs text-purple-600 dark:text-purple-400 hover:underline">Schedule →</a>
+        </div>
+        <div className="text-center py-6">
+          <Calendar className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+          <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">No sessions scheduled</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Go to Interview Practice to schedule one</p>
+          <a
+            href="/dashboard/interview-practice"
+            className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg text-xs font-medium hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-sm"
+          >
+            <Mic className="w-3.5 h-3.5" /> Start Practice
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border dark:border-gray-700 p-4 sm:p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg sm:text-xl font-semibold flex items-center gap-2">
+          <AlarmClock className="w-5 h-5 text-purple-500" />
+          Practice Reminders
+          {upcoming.length > 0 && (
+            <span className="ml-1 px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs rounded-full font-semibold">{upcoming.length}</span>
+          )}
+        </h3>
+        <a href="/dashboard/interview-practice" className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-medium">+ Schedule</a>
+      </div>
+
+      <div className="space-y-3">
+        {upcoming.slice(0, 3).map((event) => (
+          <div
+            key={event.id}
+            className={`flex items-start gap-3 p-3 rounded-lg border transition-all duration-200 ${
+              isWithin24h(event.dateTime)
+                ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700'
+                : 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800'
+            }`}
+          >
+            <div className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+              isWithin24h(event.dateTime) ? 'bg-amber-100 dark:bg-amber-900/40' : 'bg-purple-100 dark:bg-purple-900/40'
+            }`}>
+              {isWithin24h(event.dateTime)
+                ? <Bell className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                : <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400" />}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm text-gray-800 dark:text-gray-100 truncate">{event.title}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                {new Date(event.dateTime).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} · {event.time}
+              </p>
+            </div>
+            <span className={`text-xs font-bold px-2 py-1 rounded-full flex-shrink-0 ${
+              isWithin24h(event.dateTime)
+                ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300'
+                : 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300'
+            }`}>
+              {getCountdown(event.dateTime)}
+            </span>
+          </div>
+        ))}
+
+        {past.length > 0 && (
+          <div className="flex items-center gap-2 p-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
+            <CheckCircle className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            <span className="text-xs text-gray-500 dark:text-gray-400">{past.length} completed session{past.length > 1 ? 's' : ''}</span>
+          </div>
+        )}
+
+        {upcoming.length > 3 && (
+          <p className="text-xs text-gray-400 dark:text-gray-500 text-center">+{upcoming.length - 3} more scheduled</p>
+        )}
+      </div>
+
+      <a
+        href="/dashboard/interview-practice"
+        className="mt-4 w-full flex items-center justify-center gap-2 py-2 border-2 border-dashed border-purple-300 dark:border-purple-700 rounded-lg text-purple-600 dark:text-purple-400 text-xs font-medium hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200"
+      >
+        <Mic className="w-3.5 h-3.5" /> Practice Now
+      </a>
+    </div>
+  );
 };
 
 // NEW: The NotificationPanel component
@@ -130,6 +268,16 @@ const StudentDashboard = () => {
   const [activeSection, setActiveSection] = useState("overview");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+
+  // ── Live score data from localStorage ──────────────────────────────────
+  const [scoreData, setScoreData] = useState(() => getScoreSnapshot());
+  useEffect(() => {
+    const refresh = () => setScoreData(getScoreSnapshot());
+    window.addEventListener('storage', refresh);
+    const t = setInterval(refresh, 5000); // poll every 5s in case same tab
+    return () => { window.removeEventListener('storage', refresh); clearInterval(t); };
+  }, []);
+  // ───────────────────────────────────────────────────────────────────────
 
   // TEMP: Mock resumeAnalysis data to prevent ReferenceError
   const resumeAnalysis = {
@@ -473,53 +621,49 @@ const StudentDashboard = () => {
         <div className="p-4 sm:p-6 max-w-7xl mx-auto ml-0">
           {activeSection === "overview" && (
             <div className="space-y-4 sm:space-y-6">
-              {/* Key Metrics */}
+              {/* ── Key Metrics ── */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+
+                {/* Total XP */}
                 <div className="bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl p-4 sm:p-6 text-white">
                   <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <Trophy className="w-6 sm:w-8 h-6 sm:h-8" />
                     <div className="flex items-center gap-1 text-xs sm:text-sm">
                       <ArrowUp className="w-4 h-4" />
-                      {overallMetrics.improvementTrend}
+                      All-time
                     </div>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold mb-1">
-                    {overallMetrics.studyScore}/100
-                  </h3>
-                  <p className="text-blue-100 text-xs sm:text-sm">
-                    Overall Score
-                  </p>
+                  <h3 className="text-xl sm:text-2xl font-bold mb-1">{scoreData.totalPoints} XP</h3>
+                  <p className="text-blue-100 text-xs sm:text-sm">Total Score</p>
                 </div>
 
+                {/* Today's XP */}
                 <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-4 sm:p-6 text-white">
                   <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <Activity className="w-6 sm:w-8 h-6 sm:h-8" />
                     <div className="flex items-center gap-1 text-xs sm:text-sm">
-                      <ArrowUp className="w-4 h-4" />
-                      +15%
+                      <Zap className="w-4 h-4" />
+                      Today
                     </div>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold mb-1">
-                    {overallMetrics.weeklyActivity}
-                  </h3>
-                  <p className="text-green-100 text-xs sm:text-sm">
-                    Weekly Activity
-                  </p>
+                  <h3 className="text-xl sm:text-2xl font-bold mb-1">+{scoreData.dailyPoints} XP</h3>
+                  <p className="text-green-100 text-xs sm:text-sm">Earned today</p>
                 </div>
 
+                {/* Daily Progress % */}
                 <div className="bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl p-4 sm:p-6 text-white">
                   <div className="flex items-center justify-between mb-3 sm:mb-4">
-                    <Star className="w-6 sm:w-8 h-6 sm:h-8" />
-                    <div className="text-xs sm:text-sm">Rank #47</div>
+                    <Gauge className="w-6 sm:w-8 h-6 sm:h-8" />
+                    <div className="text-xs sm:text-sm font-semibold">{scoreData.dailyProgressPct}%</div>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold mb-1">
-                    {overallMetrics.ranking}
-                  </h3>
-                  <p className="text-purple-100 text-xs sm:text-sm">
-                    Current Level
-                  </p>
+                  <h3 className="text-xl sm:text-2xl font-bold mb-1">{scoreData.dailyPoints}/{scoreData.DAILY_MAX}</h3>
+                  <p className="text-purple-100 text-xs sm:text-sm">Daily Goal Progress</p>
+                  <div className="mt-2 w-full bg-white/20 rounded-full h-1.5">
+                    <div className="bg-white h-1.5 rounded-full transition-all duration-500" style={{ width: `${scoreData.dailyProgressPct}%` }} />
+                  </div>
                 </div>
 
+                {/* ATS Score */}
                 <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-xl p-4 sm:p-6 text-white">
                   <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <Target className="w-6 sm:w-8 h-6 sm:h-8" />
@@ -528,12 +672,57 @@ const StudentDashboard = () => {
                       +5 pts
                     </div>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold mb-1">
-                    {dashboardData.resume.lastScore}%
-                  </h3>
-                  <p className="text-orange-100 text-xs sm:text-sm">
-                    ATS Score
-                  </p>
+                  <h3 className="text-xl sm:text-2xl font-bold mb-1">{dashboardData.resume.lastScore}%</h3>
+                  <p className="text-orange-100 text-xs sm:text-sm">ATS Score</p>
+                </div>
+              </div>
+
+              {/* ── Category Breakdown Bar ── */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border dark:border-gray-700 p-4 sm:p-5">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Score Breakdown (All-time)</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {/* Coding */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full inline-block" />
+                        Coding (×3)
+                      </span>
+                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{scoreData.breakdown.coding} XP</span>
+                    </div>
+                    <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2">
+                      <div className="bg-blue-500 h-2 rounded-full transition-all duration-500" style={{ width: `${Math.min((scoreData.dailyBreakdown.coding / 15) * 100, 100)}%` }} />
+                    </div>
+                    <p className="text-xs text-gray-400 mt-0.5">Today: {scoreData.dailyBreakdown.coding}/15</p>
+                  </div>
+                  {/* Aptitude */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                        <span className="w-2 h-2 bg-emerald-500 rounded-full inline-block" />
+                        Aptitude (×1)
+                      </span>
+                      <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{scoreData.breakdown.aptitude} XP</span>
+                    </div>
+                    <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2">
+                      <div className="bg-emerald-500 h-2 rounded-full transition-all duration-500" style={{ width: `${Math.min((scoreData.dailyBreakdown.aptitude / 30) * 100, 100)}%` }} />
+                    </div>
+                    <p className="text-xs text-gray-400 mt-0.5">Today: {scoreData.dailyBreakdown.aptitude}/30</p>
+                  </div>
+                  {/* Interview */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                        <span className="w-2 h-2 bg-purple-500 rounded-full inline-block" />
+                        Interview (×5)
+                      </span>
+                      <span className="text-xs font-bold text-purple-600 dark:text-purple-400">{scoreData.breakdown.interview} XP</span>
+                    </div>
+                    <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2">
+                      <div className="bg-purple-500 h-2 rounded-full transition-all duration-500" style={{ width: `${Math.min((scoreData.dailyBreakdown.interview / 25) * 100, 100)}%` }} />
+                    </div>
+                    <p className="text-xs text-gray-400 mt-0.5">Today: {scoreData.dailyBreakdown.interview}/25</p>
+                  </div>
                 </div>
               </div>
 
