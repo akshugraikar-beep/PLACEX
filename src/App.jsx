@@ -54,6 +54,7 @@ import HRDashboard from "./pages/company/HRDashboard";
 import CandidateManagement from "./pages/company/CandidateManagement";
 import AIAnalysis from "./pages/company/AIAnalysis";
 import HRAnalytics from "./pages/company/HRAnalytics";
+import VideoCallPage from "./pages/company/VideoCallPage";
 import Applicants from "./pages/company/Applicants";
 import Collaboration from "./pages/company/Collaboration";
 import Employees from "./pages/company/Employees";
@@ -207,6 +208,7 @@ const AppWrapper = () => {
               <Route path="hr-analytics" element={<HRAnalytics />} />
               <Route path="shortlisted" element={<Applicants />} />
               <Route path="interviews" element={<Applicants />} />
+              <Route path="video-call" element={<VideoCallPage />} />
               <Route path="applicants" element={<Applicants />} />
               <Route path="my-jobs" element={<MyCompanyJobs />} />
               <Route path="post-job" element={<PostJob />} />

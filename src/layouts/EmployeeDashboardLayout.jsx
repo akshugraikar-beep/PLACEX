@@ -54,6 +54,7 @@ const EmployeeDashboardLayout = () => {
       "/dashboard/employee/ai-analysis":   "AI Candidate Analysis",
       "/dashboard/employee/shortlisted":   "Shortlisted Candidates",
       "/dashboard/employee/interviews":    "Interview Scheduling",
+      "/dashboard/employee/video-call":    "Video Interview Room",
       "/dashboard/employee/hr-analytics":  "HR Analytics & Reports",
       "/dashboard/employee/my-jobs":       "Posted Jobs",
       "/dashboard/employee/post-job":      "Post New Job",

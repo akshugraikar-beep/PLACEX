@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, Users, BarChart3, Plus, UserCheck, TrendingUp,
   Building2, FileText, Settings, LogOut, ChevronLeft, ChevronRight,
-  Moon, Sun, Search, Briefcase, X, Brain, Calendar, Star, User, Shield,
+  Moon, Sun, Search, Briefcase, X, Brain, Calendar, Star, User, Shield, Video,
 } from "lucide-react";
 
 const EmployeeSidebar = ({ isExpanded, setIsExpanded }) => {
@@ -65,6 +65,7 @@ const EmployeeSidebar = ({ isExpanded, setIsExpanded }) => {
         { icon: Briefcase, label: "My Jobs",      path: "/dashboard/employee/my-jobs",    type: "link" },
         { icon: Plus,      label: "Post New Job", path: "/dashboard/employee/post-job",   type: "link" },
         { icon: Calendar,  label: "Interviews",   path: "/dashboard/employee/interviews", type: "link" },
+        { icon: Video,     label: "Video Call",   path: "/dashboard/employee/video-call", type: "link" },
       ],
     },
     {
