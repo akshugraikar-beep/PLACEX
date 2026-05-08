@@ -1,17 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, Users, BarChart3, Plus, UserCheck, TrendingUp,
-  Building2, FileText, Settings, LogOut, ChevronLeft, ChevronRight,
-  Moon, Sun, Search, Briefcase, X, Brain, Shield, Calendar,
-  MessageSquare, Star, User,
+  User,
+  LayoutDashboard,
+  Users,
+  BarChart3,
+  Plus,
+  UserCheck,
+  TrendingUp,
+  Building2,
+  FileText,
+  Settings,
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+  Moon,
+  Sun,
+  Search,
+  Briefcase,
+  X,
 } from "lucide-react";
 
 const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const [openSections, setOpenSections] = useState({ talent: true, recruitment: false, intelligence: false });
+  const [openSections, setOpenSections] = useState({
+    jobs: false,
+    employees: false,
+    analytics: false,
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,10 +39,17 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
   }, []);
 
   useEffect(() => {
-    if (isMobile && isExpanded) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
+    if (isMobile && isExpanded) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isMobile, isExpanded]);
+
+  const toggleSidebar = () => setIsExpanded((prev) => !prev);
 
   const toggleDarkMode = () => {
     const next = !isDarkMode;
@@ -50,179 +75,245 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
   };
 
   const sidebarStructure = [
-    { icon: LayoutDashboard, label: "HR Dashboard", path: "/dashboard/company", type: "link" },
     {
-      icon: Users, label: "Talent", type: "section", sectionKey: "talent",
+      icon: LayoutDashboard,
+      label: "Dashboard",
+      path: "/dashboard/company",
+      type: "link",
+    },
+    {
+      icon: User,
+      label: "Profile",
+      path: "/dashboard/company/profile",
+      type: "link",
+    },
+    {
+      icon: Briefcase,
+      label: "Jobs",
+      type: "section",
+      sectionKey: "jobs",
       children: [
-        { icon: Users, label: "Candidate Management", path: "/dashboard/company/candidates", type: "link" },
-        { icon: UserCheck, label: "Applicants Tracker", path: "/dashboard/company/applicants", type: "link" },
-        { icon: Brain, label: "AI Analysis", path: "/dashboard/company/ai-analysis", type: "link" },
-        { icon: Star, label: "Shortlisted", path: "/dashboard/company/shortlisted", type: "link" },
+        { icon: Briefcase, label: "My Jobs",           path: "/dashboard/company/my-jobs",   type: "link" },
+        { icon: Plus,      label: "Post New Job",      path: "/dashboard/company/post-job",  type: "link" },
+        { icon: UserCheck, label: "Applicants Tracker",path: "/dashboard/company/applicants",type: "link" },
       ],
     },
     {
-      icon: Briefcase, label: "Recruitment", type: "section", sectionKey: "recruitment",
+      icon: Users,
+      label: "Employees",
+      type: "section",
+      sectionKey: "employees",
       children: [
-        { icon: Briefcase, label: "My Jobs", path: "/dashboard/company/my-jobs", type: "link" },
-        { icon: Plus, label: "Post New Job", path: "/dashboard/company/post-job", type: "link" },
-        { icon: Calendar, label: "Interviews", path: "/dashboard/company/interviews", type: "link" },
+        { icon: Users,    label: "Employee Directory",  path: "/dashboard/company/employees",   type: "link" },
+        { icon: BarChart3,label: "Employee Performance",path: "/dashboard/company/performance", type: "link" },
       ],
     },
     {
-      icon: BarChart3, label: "Intelligence", type: "section", sectionKey: "intelligence",
+      icon: BarChart3,
+      label: "Analytics & Reports",
+      type: "section",
+      sectionKey: "analytics",
       children: [
-        { icon: TrendingUp, label: "HR Analytics", path: "/dashboard/company/hr-analytics", type: "link" },
-        { icon: FileText, label: "Reports", path: "/dashboard/company/reports", type: "link" },
         { icon: TrendingUp, label: "Company Insights", path: "/dashboard/company/insights", type: "link" },
+        { icon: FileText,   label: "Generate Reports",  path: "/dashboard/company/reports",  type: "link" },
       ],
     },
-    { icon: Building2, label: "Collaboration", path: "/dashboard/company/collaboration", type: "link" },
-    { icon: User, label: "Profile", path: "/dashboard/company/profile", type: "link" },
-    { icon: Settings, label: "Settings", path: "/dashboard/company/settings", type: "link" },
-    { icon: isDarkMode ? Sun : Moon, label: isDarkMode ? "Light Mode" : "Dark Mode", onClick: toggleDarkMode, type: "button" },
-    { icon: LogOut, label: "Logout", onClick: handleLogout, type: "button" },
+    {
+      icon: Building2,
+      label: "Collaboration",
+      path: "/dashboard/company/collaboration",
+      type: "link",
+    },
+    {
+      icon: Settings,
+      label: "Settings",
+      path: "/dashboard/company/settings",
+      type: "link",
+    },
+    {
+      icon: isDarkMode ? Sun : Moon,
+      label: isDarkMode ? "Light Mode" : "Dark Mode",
+      onClick: toggleDarkMode,
+      type: "button",
+    },
+    {
+      icon: LogOut,
+      label: "Logout",
+      onClick: handleLogout,
+      type: "button",
+    },
   ];
-
-  const toggleSidebar = () => setIsExpanded((prev) => !prev);
-
-  const NavItem = ({ item }) => (
-    <div className="relative group px-3">
-      <NavLink
-        to={item.path}
-        end={item.path === "/dashboard/company"}
-        className={({ isActive }) =>
-          `flex items-center gap-3 py-2.5 rounded-xl mb-1 transition-all duration-200 ${isExpanded ? "px-3" : "justify-center"} ${
-            isActive
-              ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg"
-              : "text-slate-400 dark:text-slate-400 hover:bg-white/5 hover:text-white"
-          }`
-        }
-        onClick={() => isMobile && setIsExpanded(false)}
-      >
-        <item.icon className="w-4 h-4 flex-shrink-0" />
-        {isExpanded && <span className="text-sm font-medium truncate">{item.label}</span>}
-      </NavLink>
-      {!isExpanded && !isMobile && (
-        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl z-50 border border-white/10">
-          {item.label}
-        </div>
-      )}
-    </div>
-  );
 
   return (
     <>
-      {/* Mobile overlay */}
+      <style jsx global>{`
+        .sidebar-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #cbd5e1 #f1f5f9;
+        }
+        .sidebar-scrollbar::-webkit-scrollbar { width: 6px; }
+        .sidebar-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 3px; }
+        .sidebar-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .sidebar-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark .sidebar-scrollbar { scrollbar-color: #475569 #1e293b; }
+        .dark .sidebar-scrollbar::-webkit-scrollbar-track { background: #1e293b; }
+        .dark .sidebar-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
+        .dark .sidebar-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748b; }
+      `}</style>
+
       {isMobile && isExpanded && (
-        <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={() => setIsExpanded(false)} />
+        <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setIsExpanded(false)} />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col transition-[width,transform] duration-300 ease-out ${
-          isMobile
-            ? `w-72 ${isExpanded ? "translate-x-0" : "-translate-x-full"}`
-            : isExpanded ? "w-64" : "w-20"
-        }`}
-        style={{ background: 'linear-gradient(180deg, #0a0a1e 0%, #0d0d2b 100%)', borderRight: '1px solid rgba(124,58,237,0.15)' }}
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-white dark:bg-slate-900 shadow-lg border-r border-gray-200 dark:border-slate-700 
+          transition-[width,transform] duration-300 ease-out
+          ${
+            isMobile
+              ? `w-64 ${isExpanded ? "translate-x-0" : "-translate-x-full"}`
+              : isExpanded
+              ? "w-64"
+              : "w-20"
+          }`}
       >
-        {/* Brand */}
-        <div className="flex items-center justify-between flex-shrink-0 p-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        {/* Brand & Toggle */}
+        <div className="flex items-center justify-between flex-shrink-0 p-4 border-b border-gray-200 dark:border-slate-700">
           {isExpanded ? (
-            <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg,#7c3aed,#4f46e5)', boxShadow: '0 0 14px rgba(124,58,237,0.5)' }}>
-                <span className="text-white font-black text-sm">P</span>
+            <div className="flex items-center gap-2 overflow-hidden">
+              <div className="w-8 h-8 bg-purple-600 dark:bg-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-sm">P</span>
               </div>
-              <div>
-                <span className="text-white font-bold text-base">PlaceX</span>
-                <p className="text-xs text-slate-600">HR Portal</p>
-              </div>
+              <span className="text-gray-800 dark:text-white font-semibold text-lg truncate">PlaceX</span>
             </div>
           ) : (
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center mx-auto"
-              style={{ background: 'linear-gradient(135deg,#7c3aed,#4f46e5)', boxShadow: '0 0 14px rgba(124,58,237,0.5)' }}>
-              <span className="text-white font-black text-sm">P</span>
+            <div className="w-8 h-8 bg-purple-600 dark:bg-purple-500 rounded-lg flex items-center justify-center mx-auto">
+              <span className="text-white font-bold text-sm">P</span>
             </div>
           )}
-          <button onClick={toggleSidebar} className="text-slate-500 hover:text-white transition-colors flex-shrink-0" aria-label="Toggle sidebar">
-            {isMobile ? <X size={18} /> : isExpanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+          <button
+            onClick={toggleSidebar}
+            className="text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white transition-colors flex-shrink-0"
+            aria-label="Toggle sidebar"
+          >
+            {isMobile ? <X size={20} /> : isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
           </button>
         </div>
 
         {/* Search */}
         {isExpanded && (
-          <div className="p-4 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+          <div className="p-4 border-b border-gray-100 dark:border-slate-800 flex-shrink-0">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 w-3.5 h-3.5" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-400 w-4 h-4" />
               <input
-                type="text" placeholder="Search menu..." value={searchQuery}
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full text-slate-300 placeholder-slate-600 pl-9 pr-3 py-2 rounded-xl text-xs outline-none focus:ring-1 focus:ring-violet-500"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+                className="w-full bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-white pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-slate-700 focus:border-purple-500 dark:focus:border-purple-400 focus:outline-none text-sm"
               />
             </div>
           </div>
         )}
 
-        {/* Nav */}
-        <nav className="flex-1 overflow-y-auto overflow-x-hidden pt-3 pb-4" style={{ scrollbarWidth: 'thin', scrollbarColor: '#1e293b transparent' }}>
+        {/* Menu */}
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden pt-3 pb-4 sidebar-scrollbar">
           {sidebarStructure.map((item) => {
             if (item.type === "section") {
               const isOpen = openSections[item.sectionKey];
-              const filteredChildren = item.children.filter(c => c.label.toLowerCase().includes(searchQuery.toLowerCase()));
+              const filteredChildren = item.children.filter((child) =>
+                child.label.toLowerCase().includes(searchQuery.toLowerCase())
+              );
               if (searchQuery && filteredChildren.length === 0) return null;
               return (
-                <div key={item.label} className="px-3 mb-1">
+                <div key={item.label} className="px-3">
                   <button
-                    className={`w-full flex items-center gap-3 py-2.5 rounded-xl mb-1 transition-all ${isExpanded ? "px-3" : "justify-center"} text-slate-500 hover:text-slate-300`}
-                    onClick={() => setOpenSections(s => ({ ...s, [item.sectionKey]: !s[item.sectionKey] }))}
+                    className={`w-full flex items-center gap-3 py-2.5 rounded-lg mb-1 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors ${
+                      isExpanded ? "px-3" : "justify-center"
+                    }`}
+                    onClick={() =>
+                      setOpenSections((s) => ({ ...s, [item.sectionKey]: !s[item.sectionKey] }))
+                    }
+                    aria-expanded={isOpen}
                   >
-                    <item.icon className="w-4 h-4 flex-shrink-0" />
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
                     {isExpanded && (
                       <>
-                        <span className="text-xs font-semibold uppercase tracking-wider flex-1 text-left">{item.label}</span>
-                        <ChevronRight className={`w-3.5 h-3.5 transition-transform ${isOpen ? "rotate-90" : ""}`} />
+                        <span className="text-sm font-semibold truncate flex-1">{item.label}</span>
+                        <ChevronRight className={`w-4 h-4 ml-auto transition-transform ${isOpen ? "rotate-90" : ""}`} />
                       </>
                     )}
                   </button>
-                  {isExpanded && (
-                    <div className={`pl-4 border-l overflow-hidden transition-all duration-300 ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
-                      style={{ borderColor: 'rgba(124,58,237,0.2)' }}>
-                      {filteredChildren.map(child => (
-                        <NavLink key={child.label} to={child.path}
-                          className={({ isActive }) =>
-                            `flex items-center gap-2.5 py-2 px-3 rounded-xl mb-0.5 text-sm transition-all ${
-                              isActive ? "bg-violet-600/20 text-violet-300 border border-violet-500/20" : "text-slate-500 hover:text-slate-300 hover:bg-white/4"
-                            }`
-                          }
-                          onClick={() => isMobile && setIsExpanded(false)}
-                        >
-                          <child.icon className="w-3.5 h-3.5 flex-shrink-0" />
-                          <span>{child.label}</span>
-                        </NavLink>
-                      ))}
+                  <div
+                    className={`pl-7 border-l border-gray-200 dark:border-slate-700 overflow-hidden transition-all duration-300 ${
+                      isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                    style={{ height: isOpen ? `${filteredChildren.length * 44}px` : "0px" }}
+                  >
+                    {filteredChildren.map(({ label, icon: Icon, path }) => (
+                      <NavLink
+                        key={label}
+                        to={path}
+                        className={({ isActive }) =>
+                          `flex items-center gap-3 py-2 rounded-lg mb-1 transition-colors px-3 ${
+                            isActive
+                              ? "bg-blue-600 dark:bg-blue-500 text-white"
+                              : "text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
+                          }`
+                        }
+                        onClick={() => isMobile && setIsExpanded(false)}
+                      >
+                        <Icon className="w-4 h-4 flex-shrink-0" />
+                        <span className="text-sm truncate">{label}</span>
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
+
+            if (item.type === "link" && item.label.toLowerCase().includes(searchQuery.toLowerCase())) {
+              return (
+                <div key={item.label} className="relative group px-3">
+                  <NavLink
+                    to={item.path}
+                    end={item.path === "/dashboard/company"}
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 py-2.5 rounded-lg mb-1 transition-colors ${
+                        isExpanded ? "px-3" : "justify-center"
+                      } ${
+                        isActive
+                          ? "bg-blue-600 dark:bg-blue-500 text-white"
+                          : "text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
+                      }`
+                    }
+                    onClick={() => isMobile && setIsExpanded(false)}
+                  >
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
+                    {isExpanded && <span className="text-sm font-medium truncate">{item.label}</span>}
+                  </NavLink>
+                  {!isExpanded && !isMobile && (
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900/90 dark:bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg z-50">
+                      {item.label}
                     </div>
                   )}
                 </div>
               );
             }
 
-            if (item.type === "link" && item.label.toLowerCase().includes(searchQuery.toLowerCase())) {
-              return <NavItem key={item.label} item={item} />;
-            }
-
             if (item.type === "button" && item.label.toLowerCase().includes(searchQuery.toLowerCase())) {
               return (
                 <div key={item.label} className="relative group px-3">
                   <button
-                    onClick={() => { item.onClick?.(); if (isMobile) setIsExpanded(false); }}
-                    className={`w-full flex items-center gap-3 py-2.5 rounded-xl mb-1 text-slate-500 hover:text-white hover:bg-white/5 transition-all ${isExpanded ? "px-3" : "justify-center"}`}
+                    onClick={() => { item.onClick && item.onClick(); if (isMobile) setIsExpanded(false); }}
+                    className={`w-full flex items-center gap-3 py-2.5 rounded-lg mb-1 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors ${
+                      isExpanded ? "px-3" : "justify-center"
+                    }`}
                   >
-                    <item.icon className="w-4 h-4 flex-shrink-0" />
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
                     {isExpanded && <span className="text-sm font-medium truncate">{item.label}</span>}
                   </button>
                   {!isExpanded && !isMobile && (
-                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl z-50 border border-white/10">
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900/90 dark:bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg z-50">
                       {item.label}
                     </div>
                   )}
@@ -232,22 +323,6 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
             return null;
           })}
         </nav>
-
-        {/* Footer user badge */}
-        {isExpanded && (
-          <div className="p-4 flex-shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-            <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{ background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.2)' }}>
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg,#7c3aed,#4f46e5)' }}>
-                <User className="w-3.5 h-3.5 text-white" />
-              </div>
-              <div className="overflow-hidden">
-                <p className="text-xs font-medium text-slate-300 truncate">HR Manager</p>
-                <p className="text-xs text-slate-600 truncate">PlaceX Portal</p>
-              </div>
-            </div>
-          </div>
-        )}
       </aside>
     </>
   );

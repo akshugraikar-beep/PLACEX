@@ -48,6 +48,7 @@ import Analytics from "./pages/Institution/Analytics";
 import InstitutionSettings from "./pages/Institution/Settings";
 
 import CompanyDashboardLayout from "./layouts/CompanyDashboardLayout";
+import HRDashboardLayout from "./layouts/HRDashboardLayout";
 import CompanyDashboard from "./pages/company/CompanyDashboard";
 import HRDashboard from "./pages/company/HRDashboard";
 import CandidateManagement from "./pages/company/CandidateManagement";
@@ -142,7 +143,7 @@ const AppWrapper = () => {
               <Route path="settings" element={<InstitutionSettings />} />
             </Route>
 
-            {/* Company / HR Dashboard */}
+            {/* Company Dashboard — original, unchanged */}
             <Route
               path="/dashboard/company"
               element={
@@ -151,12 +152,7 @@ const AppWrapper = () => {
                 </ProtectedRoute>
               }
             >
-              <Route index element={<HRDashboard />} />
-              <Route path="candidates" element={<CandidateManagement />} />
-              <Route path="ai-analysis" element={<AIAnalysis />} />
-              <Route path="hr-analytics" element={<HRAnalytics />} />
-              <Route path="shortlisted" element={<Applicants />} />
-              <Route path="interviews" element={<Applicants />} />
+              <Route index element={<CompanyDashboard />} />
               <Route path="profile" element={<CompanyProfile />} />
               <Route path="employees" element={<Employees />} />
               <Route path="performance" element={<Performance />} />
@@ -167,6 +163,31 @@ const AppWrapper = () => {
               <Route path="insights" element={<Insights />} />
               <Route path="collaboration" element={<Collaboration />} />
               <Route path="reports" element={<CompanyReports />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
+
+            {/* HR Intelligence Portal — separate at /dashboard/hr */}
+            <Route
+              path="/dashboard/hr"
+              element={
+                <ProtectedRoute>
+                  <HRDashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<HRDashboard />} />
+              <Route path="candidates" element={<CandidateManagement />} />
+              <Route path="ai-analysis" element={<AIAnalysis />} />
+              <Route path="hr-analytics" element={<HRAnalytics />} />
+              <Route path="shortlisted" element={<Applicants />} />
+              <Route path="interviews" element={<Applicants />} />
+              <Route path="post-job" element={<PostJob />} />
+              <Route path="applicants" element={<Applicants />} />
+              <Route path="my-jobs" element={<MyCompanyJobs />} />
+              <Route path="insights" element={<Insights />} />
+              <Route path="collaboration" element={<Collaboration />} />
+              <Route path="reports" element={<CompanyReports />} />
+              <Route path="profile" element={<CompanyProfile />} />
               <Route path="settings" element={<Settings />} />
             </Route>
 

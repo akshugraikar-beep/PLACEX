@@ -55,12 +55,7 @@ const CompanyDashboardLayout = () => {
     const path = location.pathname;
     if (/^\/dashboard\/company\/jobs\/[^/]+\/edit$/.test(path)) return "Edit Job";
     const titleMap = {
-      "/dashboard/company": "HR Intelligence Dashboard",
-      "/dashboard/company/candidates": "Candidate Management",
-      "/dashboard/company/ai-analysis": "AI Candidate Analysis",
-      "/dashboard/company/shortlisted": "Shortlisted Candidates",
-      "/dashboard/company/interviews": "Interview Scheduling",
-      "/dashboard/company/hr-analytics": "HR Analytics & Reports",
+      "/dashboard/company": "Company Dashboard",
       "/dashboard/company/profile": "Company Profile",
       "/dashboard/company/employees": "Employee Directory",
       "/dashboard/company/performance": "Employee Performance Reports",
@@ -72,7 +67,7 @@ const CompanyDashboardLayout = () => {
       "/dashboard/company/reports": "Generate Reports",
       "/dashboard/company/settings": "Settings",
     };
-    return titleMap[path] || "HR Portal";
+    return titleMap[path] || "Company Dashboard";
   };
 
   const logout = () => {
