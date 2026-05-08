@@ -79,29 +79,27 @@ const EmployeeDashboardLayout = () => {
 
   return (
     <>
-      <Toaster position="top-center" reverseOrder={false}
-        toastOptions={{ duration: 5000, style: { background: "#1e1b4b", color: "#fff", border: "1px solid rgba(124,58,237,0.3)" } }}
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        toastOptions={{
+          duration: 5000,
+          style: { background: "#1e1b4b", color: "#fff", border: "1px solid rgba(124,58,237,0.3)" },
+        }}
       />
 
-      {/* ── Root: fixed to full viewport so it's independent of any parent flex containers ── */}
-      <div
-        className="hr-layout"
-        style={{ position: "fixed", inset: 0, display: "flex", overflow: "hidden" }}
-      >
+      {/* Same pattern as student DashboardLayout — min-h-screen flex, natural scroll */}
+      <div className="flex hr-layout min-h-screen">
         <EmployeeSidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
 
-        {/* ── Right column ── */}
+        {/* Right column — grows and scrolls naturally */}
         <div
-          style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, overflow: "hidden" }}
-          className={`transition-[margin] duration-300 ease-out ${
+          className={`flex-1 flex flex-col transition-all duration-300 ${
             !isMobile ? (sidebarExpanded ? "ml-64" : "ml-20") : "ml-0"
           }`}
         >
-          {/* ── Sticky topbar ── */}
-          <header
-            className="hr-topbar flex-shrink-0 flex items-center justify-between px-4 sm:px-6 py-3 z-20"
-            style={{ position: "sticky", top: 0 }}
-          >
+          {/* Sticky topbar */}
+          <header className="hr-topbar sticky top-0 z-20 px-4 sm:px-6 py-3 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center min-w-0 flex-1 mr-4">
               {isMobile && (
                 <button
@@ -126,10 +124,10 @@ const EmployeeDashboardLayout = () => {
             <div className="flex items-center gap-3 flex-shrink-0">
               {/* Bell */}
               <button
-                className="relative p-2 rounded-xl hr-text-secondary hover:text-white transition"
+                className="relative p-2 rounded-xl transition"
                 style={{ background: "var(--hr-input-bg)", border: "var(--hr-input-border)" }}
               >
-                <Bell className="w-4 h-4" />
+                <Bell className="w-4 h-4 hr-text-secondary" />
                 <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-violet-500" />
               </button>
 
@@ -147,7 +145,9 @@ const EmployeeDashboardLayout = () => {
                     <User className="w-4 h-4 text-white" />
                   </div>
                   <ChevronDown
-                    className={`w-4 h-4 text-slate-400 transition-transform hidden sm:block ${dropdownOpen ? "rotate-180" : ""}`}
+                    className={`w-4 h-4 text-slate-400 transition-transform hidden sm:block ${
+                      dropdownOpen ? "rotate-180" : ""
+                    }`}
                   />
                 </button>
 
@@ -185,16 +185,8 @@ const EmployeeDashboardLayout = () => {
             </div>
           </header>
 
-          {/* ── Scrollable main content ── */}
-          <main
-            style={{
-              flex: 1,
-              overflowY: "auto",
-              overflowX: "hidden",
-              scrollbarWidth: "thin",
-              scrollbarColor: "#4c1d95 transparent",
-            }}
-          >
+          {/* Main content — grows naturally, no overflow tricks needed */}
+          <main className="flex-1 min-h-screen">
             <Outlet />
           </main>
         </div>
