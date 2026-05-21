@@ -23,6 +23,7 @@ import {
   Bell,
   Moon,
   Sun,
+  TrendingUp,
 } from "lucide-react";
 
 const Sidebar = ({ isExpanded, setIsExpanded }) => {
@@ -135,11 +136,11 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
         },
       ],
     },
-    // Interview as direct link
+    // Trending Skills as direct link
     {
       type: "single",
-      label: "Interview Experience",
-      icon: BookOpen,
+      label: "Trending Skills",
+      icon: TrendingUp,
       path: "/dashboard/interview-experience",
     },
     // Progress as direct link

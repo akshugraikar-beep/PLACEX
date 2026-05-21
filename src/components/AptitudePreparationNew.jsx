@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Brain, RotateCcw, Clock } from "lucide-react";
 import { useDailyLimit, getTodayKey } from "../hooks/useDailyLimit";
 import { addScore } from "../hooks/useScoring";
+import { useTabWarning } from "../hooks/useTabWarning";
+import TabWarningOverlay from "./TabWarningOverlay";
 
 // QUANTITATIVE APTITUDE - 100 QUESTIONS
 const QUANTITATIVE_QUESTIONS = [
@@ -332,6 +334,9 @@ const AptitudePreparationNew = () => {
   const [isTimedOut, setIsTimedOut] = useState(false);
   const [usedQuestionHistory, setUsedQuestionHistory] = useState([]);
 
+  // Tab-switch detection — only active while quiz is running
+  const { warningCount, showWarning, dismiss: dismissWarning, reset: resetWarning, terminated: sessionTerminated, maxWarnings } = useTabWarning(quizStarted && !showScore);
+
   // ── Daily limit: each section can be attempted once per day ──
   const today = getTodayKey();
   const getDailySectionKey = (section) => `PlaceX_aptitude_${section}_${today}`;
@@ -507,7 +512,7 @@ const AptitudePreparationNew = () => {
     }
   }, [showScore]); // eslint-disable-line
 
-  // SECTION SELECTION SCREEN
+  // Section selection screen
   if (!quizStarted) {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-950 dark:via-blue-950 dark:to-gray-900 p-4">
@@ -652,6 +657,14 @@ const AptitudePreparationNew = () => {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-950 dark:via-blue-950 dark:to-gray-900 p-4 flex items-center justify-center">
+      <TabWarningOverlay
+        showWarning={showWarning}
+        warningCount={warningCount}
+        maxWarnings={maxWarnings}
+        terminated={sessionTerminated}
+        onDismiss={dismissWarning}
+        onTerminate={() => { resetWarning(); setShowScore(true); }}
+      />
       <div className="w-full max-w-2xl">
         {/* Top Bar */}
         <div className="mb-6 flex justify-between items-center">

@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import InterviewScheduleModal from "../../components/InterviewScheduleModal";
+
 import { FaSearch, FaEllipsisV } from "react-icons/fa";
 
 const ApplicantsTracker = () => {
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(null);
+  const [schedulingCandidate, setSchedulingCandidate] = useState(null);
   const rowRefs = useRef({}); // ref per row for positioning
 
   // Close dropdown when clicking outside
@@ -29,14 +32,14 @@ const ApplicantsTracker = () => {
     { label: "Hired", value: 18, color: "from-orange-500 to-yellow-500" },
   ];
 
-  const applicants = [
-    { id: 1, name: "John Doe", role: "Frontend Developer", status: "Shortlisted", date: "2023-06-01" },
-    { id: 2, name: "Jane Smith", role: "Backend Developer", status: "Interviewed", date: "2023-06-05" },
-    { id: 3, name: "Michael Brown", role: "UI/UX Designer", status: "Hired", date: "2023-06-10" },
-    { id: 4, name: "Emily Davis", role: "Fullstack Developer", status: "Shortlisted", date: "2023-06-12" },
-  ];
+  const [applicantsList, setApplicantsList] = useState([
+    { id: 1, name: "John Doe", role: "Frontend Developer", status: "Shortlisted", date: "2023-06-01", email: "john.doe@email.com" },
+    { id: 2, name: "Jane Smith", role: "Backend Developer", status: "Interviewed", date: "2023-06-05", email: "jane.smith@email.com" },
+    { id: 3, name: "Michael Brown", role: "UI/UX Designer", status: "Hired", date: "2023-06-10", email: "michael.brown@email.com" },
+    { id: 4, name: "Emily Davis", role: "Fullstack Developer", status: "Shortlisted", date: "2023-06-12", email: "emily.davis@email.com" },
+  ]);
 
-  const filteredApplicants = applicants.filter((applicant) => {
+  const filteredApplicants = applicantsList.filter((applicant) => {
     const matchesStatus = selectedStatus === "All" || applicant.status === selectedStatus;
     const q = searchQuery.toLowerCase();
     const matchesSearch =
@@ -44,10 +47,16 @@ const ApplicantsTracker = () => {
     return matchesStatus && matchesSearch;
   });
 
+
   const handleAction = (action, applicant) => {
-    alert(`${action} clicked for ${applicant.name}`);
+    if (action === "Schedule Interview") {
+      setSchedulingCandidate(applicant);
+    } else {
+      alert(`${action} clicked for ${applicant.name}`);
+    }
     setDropdownOpen(null);
   };
+
 
   // Computes dropdown placement (open up if near bottom)
   const getDropdownPlacement = (index) => {
@@ -202,7 +211,7 @@ const ApplicantsTracker = () => {
                                 maxHeight: `${maxHeight}px`,
                               }}
                             >
-                              {["Resume", "Profile", "Delete"].map((action) => (
+                              {["Resume", "Profile", "Schedule Interview", "Delete"].map((action) => (
                                 <button
                                   key={action}
                                   onClick={() => handleAction(action, applicant)}
@@ -212,6 +221,7 @@ const ApplicantsTracker = () => {
                                   {action}
                                 </button>
                               ))}
+
                             </div>
                           )}
                         </div>
@@ -224,10 +234,25 @@ const ApplicantsTracker = () => {
           </div>
         </div>
 
-        
+        {/* Interview Scheduling Modal */}
+        <InterviewScheduleModal
+          isOpen={!!schedulingCandidate}
+          onClose={() => setSchedulingCandidate(null)}
+          candidate={schedulingCandidate}
+          onScheduleSuccess={(updatedCandidate) => {
+            setApplicantsList((prevList) =>
+              prevList.map((item) =>
+                item.id === updatedCandidate.id
+                  ? { ...item, status: "Interviewed" }
+                  : item
+              )
+            );
+          }}
+        />
       </div>
     </div>
   );
 };
+
 
 export default ApplicantsTracker;

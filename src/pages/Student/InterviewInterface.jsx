@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useDailyLimit } from "../../hooks/useDailyLimit";
 import { addScore } from "../../hooks/useScoring";
+import { useTabWarning } from "../../hooks/useTabWarning";
+import TabWarningOverlay from "../../components/TabWarningOverlay";
 import Header from '../../components/Header'; 
 import Footer from "../../components/Footer";
 import {
@@ -1405,6 +1407,9 @@ const AIInterviewAssistant = () => {
   const fileInputRef = useRef(null);
   const contentCardRef = useRef(null);
 
+  // Tab-switch detection — only active during live interview session (step 3)
+  const { warningCount, showWarning, dismiss: dismissWarning, reset: resetWarning, terminated: sessionTerminated, maxWarnings } = useTabWarning(currentStep === 3);
+
   // Smooth-scroll to the content card on every step change
   useEffect(() => {
     if (contentCardRef.current) {
@@ -1492,6 +1497,14 @@ const AIInterviewAssistant = () => {
 
   return (
     <ThemeProvider>
+      <TabWarningOverlay
+        showWarning={showWarning}
+        warningCount={warningCount}
+        maxWarnings={maxWarnings}
+        terminated={sessionTerminated}
+        onDismiss={dismissWarning}
+        onTerminate={() => { resetWarning(); setCurrentStep(4); }}
+      />
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 transition-colors duration-300">
         <ThemeToggle />
         <div className="max-w-6xl mx-auto">

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; font-family:Arial,sans-serif; }
+</style>
+</head>
+<body>
+<svg id="dfd" width="1100" height="700" viewBox="0 0 1100 700" xmlns="http://www.w3.org/2000/svg" style="background:white;">
+  <defs>
+    <!-- Arrow pointing RIGHT -->
+    <marker id="aR" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0 0, 9 3.5, 0 7" fill="black"/>
+    </marker>
+    <!-- Arrow pointing LEFT -->
+    <marker id="aL" markerWidth="9" markerHeight="7" refX="1" refY="3.5" orient="auto">
+      <polygon points="9 0, 0 3.5, 9 7" fill="black"/>
+    </marker>
+  </defs>
+
+  <!-- ===== CENTRAL OVAL: Placify ===== -->
+  <ellipse cx="550" cy="350" rx="178" ry="252" fill="white" stroke="black" stroke-width="3"/>
+  <text x="550" y="358" text-anchor="middle" font-size="36" font-weight="bold" fill="black">Placify</text>
+
+  <!-- ===== LEFT ENTITIES ===== -->
+  <!-- Student -->
+  <rect x="18" y="82" width="148" height="62" fill="white" stroke="black" stroke-width="2.5"/>
+  <text x="92" y="119" text-anchor="middle" font-size="22" font-weight="bold" fill="black">Student</text>
+
+  <!-- Company -->
+  <rect x="18" y="318" width="148" height="62" fill="white" stroke="black" stroke-width="2.5"/>
+  <text x="92" y="355" text-anchor="middle" font-size="22" font-weight="bold" fill="black">Company</text>
+
+  <!-- Institution -->
+  <rect x="18" y="556" width="148" height="62" fill="white" stroke="black" stroke-width="2.5"/>
+  <text x="92" y="593" text-anchor="middle" font-size="21" font-weight="bold" fill="black">Institution</text>
+
+  <!-- ===== RIGHT ENTITY ===== -->
+  <!-- HR -->
+  <rect x="934" y="318" width="148" height="62" fill="white" stroke="black" stroke-width="2.5"/>
+  <text x="1008" y="355" text-anchor="middle" font-size="22" font-weight="bold" fill="black">HR</text>
+
+  <!-- =========================================== -->
+  <!-- STUDENT <-> PLACIFY                         -->
+  <!-- TO Placify →  y: 95,107,119,131            -->
+  <!-- FROM Placify ← y: 101,113,125,137          -->
+  <!-- oval left x values approx at these y vals:  -->
+  <!-- y=95  → x≈524  y=101→x≈513                -->
+  <!-- y=107 → x≈502  y=113→x≈491                -->
+  <!-- y=119 → x≈480  y=125→x≈470                -->
+  <!-- y=131 → x≈460  y=137→x≈451                -->
+  <!-- =========================================== -->
+
+  <!-- → Register / Login -->
+  <line x1="166" y1="95"  x2="522" y2="95"  stroke="black" stroke-width="1.5" marker-end="url(#aR)"/>
+  <text x="340" y="90" text-anchor="middle" font-size="11" fill="black">Register / Login</text>
+
+  <!-- → Apply for Jobs -->
+  <line x1="166" y1="107" x2="510" y2="107" stroke="black" stroke-width="1.5" marker-end="url(#aR)"/>
+  <text x="335" y="103" text-anchor="middle" font-size="11" fill="black">Apply for Jobs</text>
+
+  <!-- → Practice -->
+  <line x1="166" y1="119" x2="498" y2="119" stroke="black" stroke-width="1.5" marker-end="url(#aR)"/>
+  <text x="330" y="115" text-anchor="middle" font-size="11" fill="black">Practice (Coding / Aptitude / Interview)</text>
+
+  <!-- → Submit Resume -->
+  <line x1="166" y1="131" x2="486" y2="131" stroke="black" stroke-width="1.5" marker-end="url(#aR)"/>
+  <text x="323" y="127" text-anchor="middle" font-size="11" fill="black">Submit Resume</text>
+
+  <!-- ← View Job Listings -->
+  <line x1="516" y1="101" x2="166" y2="101" stroke="black" stroke-width="1.5" marker-end="url(#aL)"/>
+  <text x="338" y="145" text-anchor="middle" font-size="11" fill="black">View Job Listings</text>
+
+  <!-- ← ATS Resume Score -->
+  <line x1="504" y1="113" x2="166" y2="113" stroke="black" stroke-width="1.5" marker-end="url(#aL)"/>
+  <text x="332" y="157" text-anchor="middle" font-size="11" fill="black">ATS Resume Score</text>
+
+  <!-- ← Offer Letter -->
+  <line x1="492" y1="125" x2="166" y2="125" stroke="black" stroke-width="1.5" marker-end="url(#aL)"/>
+  <text x="326" y="169" text-anchor="middle" font-size="11" fill="black">Offer Letter</text>
+
+  <!-- ← Practice Results -->
+  <line x1="480" y1="137" x2="166" y2="137" stroke="black" stroke-width="1.5" marker-end="url(#aL)"/>
+  <text x="320" y="181" text-anchor="middle" font-size="11" fill="black">Practice Results</text>
+
+  <!-- =========================================== -->
+  <!-- COMPANY <-> PLACIFY                         -->
+  <!-- oval left at y=349 ≈ 372                   -->
+  <!-- =========================================== -->
+
+  <!-- → Post Jobs -->
+  <line x1="166" y1="332" x2="371" y2="332" stroke="black" stroke-width="1.5" marker-end="url(#aR)"/>
+  <text x="265" y="328" text-anchor="middle" font-size="11" fill="black">Post Jobs</text>
+
+  <!-- → View Applicants -->
+  <line x1="166" y1="344" x2="371" y2="344" stroke="black" stroke-width="1.5" marker-end="url(#aR)"/>
+  <text x="265" y="340" text-anchor="middle" font-size="11" fill="black">View Applicants</text>
+
+  <!-- → Schedule Interviews -->
+  <line x1="166" y1="356" x2="371" y2="356" stroke="black" stroke-width="1.5" marker-end="url(#aR)"/>
+  <text x="265" y="352" text-anchor="middle" font-size="11" fill="black">Schedule Interviews</text>
+
+  <!-- ← Candidate Profiles -->
+  <line x1="371" y1="338" x2="166" y2="338" stroke="black" stroke-width="1.5" marker-end="url(#aL)"/>
+  <text x="268" y="375" text-anchor="middle" font-size="11" fill="black">Candidate Profiles</text>
+
+  <!-- ← AI Analysis Reports -->
+  <line x1="371" y1="350" x2="166" y2="350" stroke="black" stroke-width="1.5" marker-end="url(#aL)"/>
+  <text x="268" y="387" text-anchor="middle" font-size="11" fill="black">AI Analysis Reports</text>
+
+  <!-- ← HR Analytics -->
+  <line x1="371" y1="362" x2="166" y2="362" stroke="black" stroke-width="1.5" marker-end="url(#aL)"/>
+  <text x="268" y="399" text-anchor="middle" font-size="11" fill="black">HR Analytics</text>
+
+  <!-- =========================================== -->
+  <!-- INSTITUTION <-> PLACIFY                     -->
+  <!-- oval left at y≈563 ≈ x≈486                -->
+  <!-- =========================================== -->
+
+  <!-- → Register Institution -->
+  <line x1="166" y1="564" x2="488" y2="564" stroke="black" stroke-width="1.5" marker-end="url(#aR)"/>
+  <text x="324" y="560" text-anchor="middle" font-size="11" fill="black">Register Institution</text>
+
+  <!-- → Monitor Students -->
+  <line x1="166" y1="578" x2="480" y2="578" stroke="black" stroke-width="1.5" marker-end="url(#aR)"/>
+  <text x="320" y="574" text-anchor="middle" font-size="11" fill="black">Monitor Students</text>
+
+  <!-- ← Student Performance Reports -->
+  <line x1="492" y1="571" x2="166" y2="571" stroke="black" stroke-width="1.5" marker-end="url(#aL)"/>
+  <text x="326" y="597" text-anchor="middle" font-size="11" fill="black">Student Performance Reports</text>
+
+  <!-- ← Department Analytics -->
+  <line x1="484" y1="585" x2="166" y2="585" stroke="black" stroke-width="1.5" marker-end="url(#aL)"/>
+  <text x="322" y="611" text-anchor="middle" font-size="11" fill="black">Department Analytics</text>
+
+  <!-- =========================================== -->
+  <!-- HR <-> PLACIFY (right side)                 -->
+  <!-- oval right at y=349 ≈ x=728               -->
+  <!-- =========================================== -->
+
+  <!-- → Manage Candidates -->
+  <line x1="934" y1="332" x2="729" y2="332" stroke="black" stroke-width="1.5" marker-end="url(#aL)"/>
+  <text x="830" y="328" text-anchor="middle" font-size="11" fill="black">Manage Candidates</text>
+
+  <!-- → Video Call / Interview -->
+  <line x1="934" y1="344" x2="729" y2="344" stroke="black" stroke-width="1.5" marker-end="url(#aL)"/>
+  <text x="830" y="340" text-anchor="middle" font-size="11" fill="black">Video Call / Interview</text>
+
+  <!-- → Issue Offer Letter -->
+  <line x1="934" y1="356" x2="729" y2="356" stroke="black" stroke-width="1.5" marker-end="url(#aL)"/>
+  <text x="830" y="352" text-anchor="middle" font-size="11" fill="black">Issue Offer Letter</text>
+
+  <!-- ← Applicant Data -->
+  <line x1="729" y1="338" x2="934" y2="338" stroke="black" stroke-width="1.5" marker-end="url(#aR)"/>
+  <text x="830" y="375" text-anchor="middle" font-size="11" fill="black">Applicant Data</text>
+
+  <!-- ← Performance Reports -->
+  <line x1="729" y1="350" x2="934" y2="350" stroke="black" stroke-width="1.5" marker-end="url(#aR)"/>
+  <text x="830" y="387" text-anchor="middle" font-size="11" fill="black">Performance Reports</text>
+
+  <!-- ← Job Insights -->
+  <line x1="729" y1="362" x2="934" y2="362" stroke="black" stroke-width="1.5" marker-end="url(#aR)"/>
+  <text x="830" y="399" text-anchor="middle" font-size="11" fill="black">Job Insights</text>
+
+  <!-- TITLE -->
+  <text x="550" y="670" text-anchor="middle" font-size="20" font-weight="bold" fill="black" letter-spacing="2">0-LEVEL DFD</text>
+
+</svg>
+</body>
+</html>

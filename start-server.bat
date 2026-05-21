@@ -4,7 +4,7 @@ echo    PlaceX FEEDBACK SERVER
 echo ===================================
 echo.
 
-cd /d "d:\1-coding\GSSoC'25\PlaceX-Smarter_Placements-Sharper_Talent\server"
+cd /d "%~dp0server"
 
 echo Starting simplified email server...
 echo No MongoDB required - just email functionality!

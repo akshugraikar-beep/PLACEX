@@ -45,7 +45,10 @@ const port = PORT || 5000;
 // ====== Middleware ======
 app.use(
   cors({
-    origin: "*",
+    origin: (origin, callback) => {
+      // Reflect request origin to allow credentials/auth headers in modern browsers
+      callback(null, origin || "*");
+    },
     credentials: true,
   })
 );

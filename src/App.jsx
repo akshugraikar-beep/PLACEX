@@ -30,7 +30,7 @@ import Aptitude from "./pages/Student/Aptitude";
 import Coding from "./pages/Student/Coding";
 import CodingEditor from "./pages/Student/CodingEditor";
 import Dashboard from "./pages/Student/Dashboard";
-import InterviewExperience from "./pages/Student/InterviewExperience";
+import TrendingSkills from "./pages/Student/TrendingSkills";
 import InterviewInterface from "./pages/Student/InterviewInterface";
 import Jobs from "./pages/Student/Jobs";
 import JobDetailsPage from "./components/JobDetailsPage";
@@ -267,7 +267,7 @@ const AppWrapper = () => {
               <Route path="aptitude" element={<Aptitude />} />
               <Route
                 path="interview-experience"
-                element={<InterviewExperience />}
+                element={<TrendingSkills />}
               />
               <Route path="settings" element={<Settings />} />
               <Route path="progress" element={<StudentProgressDashboard />} />

@@ -6,6 +6,7 @@ import { User, LogOut, ChevronDown } from "lucide-react";
 import apiClient from "../api/apiClient";
 import axios from "axios";
 import CursorToggle from "../components/CursorToggle";
+import logger from "../utils/logger";
 const DashboardLayout = () => {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);

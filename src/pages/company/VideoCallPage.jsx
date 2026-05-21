@@ -2,9 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Video, Copy, Check, Users, Clock, Link2, Phone,
-  ArrowLeft, Share2, RefreshCw, ExternalLink, Shield,
+  Video, Copy, Check, Clock, Link2, Phone,
+  ArrowLeft, Share2, RefreshCw, ExternalLink, Shield, Send, Loader2
 } from "lucide-react";
+import emailjs from '@emailjs/browser';
+import toast from 'react-hot-toast';
 
 // ── Utility ──────────────────────────────────────────────────────────────────
 const randomId = () =>
@@ -46,6 +48,10 @@ const VideoCallPage = () => {
   const [elapsed, setElapsed] = useState(0);
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const [apiError, setApiError] = useState(null);
+
+  // Email state
+  const [candidateEmail, setCandidateEmail] = useState("");
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
 
   const jitsiContainerRef = useRef(null);
   const jitsiApiRef = useRef(null);
@@ -97,6 +103,7 @@ const VideoCallPage = () => {
           enableWelcomePage: false,
           prejoinPageEnabled: false,
           disableDeepLinking: true,
+          disableSelfView: false, // Prevents the user from accidentally hiding their own camera
         },
         interfaceConfigOverwrite: {
           SHOW_JITSI_WATERMARK: false,
@@ -109,6 +116,7 @@ const VideoCallPage = () => {
           TOOLBAR_BUTTONS: [
             "microphone", "camera", "desktop", "fullscreen",
             "fodeviceselection", "hangup", "chat", "raisehand",
+            "participants-pane", "invite",
             "videoquality", "tileview", "select-background",
           ],
         },
@@ -146,6 +154,48 @@ const VideoCallPage = () => {
 
   // ── Format timer ──────────────────────────────────────────────────────────
   const fmt = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+
+  // ── Send Email function ───────────────────────────────────────────────────
+  const handleSendEmail = async () => {
+    if (!candidateEmail) {
+      toast.error('Please enter an email address first.');
+      return;
+    }
+
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey || serviceId === 'YOUR_SERVICE_ID') {
+      toast.error('EmailJS is not configured in .env file.');
+      return;
+    }
+
+    setIsSendingEmail(true);
+    const userData = JSON.parse(localStorage.getItem("user") || "{}");
+    const hrName = userData?.firstName || userData?.name || 'PlaceX HR Team';
+
+    const templateParams = {
+      to_email: candidateEmail,
+      to_name: 'Candidate',
+      role: 'a Live Video Interview',
+      date_time: 'Right now',
+      meet_link: roomUrl,
+      notes: 'Please join the video call using the link provided below.',
+      from_name: hrName,
+    };
+
+    try {
+      await emailjs.send(serviceId, templateId, templateParams, publicKey);
+      toast.success('Interview link sent to candidate successfully!');
+      setCandidateEmail("");
+    } catch (error) {
+      console.error('Email sending failed:', error);
+      toast.error('Failed to send email. Check your EmailJS configuration.');
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
@@ -299,15 +349,6 @@ const VideoCallPage = () => {
               </div>
 
               <div>
-                <p className="text-xs hr-text-muted mb-1">Candidate Invite Link</p>
-                <div className="px-3 py-2 rounded-lg mb-2"
-                  style={{ background: "var(--hr-input-bg)", border: "var(--hr-input-border)" }}>
-                  <span className="text-xs font-mono hr-text-secondary break-all">{shareUrl}</span>
-                </div>
-                <CopyButton text={shareUrl} label="Copy invite link" />
-              </div>
-
-              <div>
                 <p className="text-xs hr-text-muted mb-1">Direct Jitsi Link</p>
                 <div className="px-3 py-2 rounded-lg mb-2"
                   style={{ background: "var(--hr-input-bg)", border: "var(--hr-input-border)" }}>
@@ -315,6 +356,54 @@ const VideoCallPage = () => {
                 </div>
                 <CopyButton text={roomUrl} label="Copy Jitsi link" />
               </div>
+            </div>
+          </div>
+
+          {/* Email Invite Section */}
+          <div className="hr-card p-5">
+            <h3 className="font-semibold hr-text-primary text-sm mb-3 flex items-center gap-2">
+              <Share2 className="w-4 h-4 text-violet-400" /> Share with Candidate
+            </h3>
+            
+            <div className="mb-4">
+              <p className="text-xs hr-text-muted mb-2">Send direct join link via EmailJS:</p>
+              <div className="flex flex-col gap-2">
+                <input
+                  type="email"
+                  placeholder="candidate@email.com"
+                  value={candidateEmail}
+                  onChange={(e) => setCandidateEmail(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                />
+                <button
+                  onClick={handleSendEmail}
+                  disabled={isSendingEmail || !candidateEmail}
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white font-medium text-sm transition-all disabled:opacity-60"
+                  style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}
+                >
+                  {isSendingEmail ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</>
+                  ) : (
+                    <><Send className="w-4 h-4" /> Email Jitsi Link</>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2 pt-4 border-t border-slate-200 dark:border-slate-800">
+              <p className="text-xs hr-text-muted mb-2">Or copy manually:</p>
+              {[
+                {
+                  label: "Copy Email Template",
+                  text: `Hi,\n\nYou've been invited for a video interview at PlaceX.\n\nJoin here: ${roomUrl}\n\nRoom ID: ${roomId}\n\nBest regards,\nHR Team — PlaceX`,
+                },
+                {
+                  label: "Copy WhatsApp Message",
+                  text: `Hi! You're invited for a PlaceX video interview. Join here: ${roomUrl}`,
+                },
+              ].map(({ label, text }) => (
+                <CopyButton key={label} text={text} label={label} />
+              ))}
             </div>
           </div>
 
@@ -339,47 +428,6 @@ const VideoCallPage = () => {
             </button>
           </div>
 
-          {/* Share options */}
-          <div className="hr-card p-5">
-            <h3 className="font-semibold hr-text-primary text-sm mb-3 flex items-center gap-2">
-              <Share2 className="w-4 h-4 text-violet-400" /> Share with Candidate
-            </h3>
-            <div className="space-y-2">
-              {[
-                {
-                  label: "Copy Email Template",
-                  text: `Hi,\n\nYou've been invited for a video interview at PlaceX.\n\nJoin here: ${shareUrl}\n\nRoom ID: ${roomId}\n\nBest regards,\nHR Team — PlaceX`,
-                },
-                {
-                  label: "Copy WhatsApp Message",
-                  text: `Hi! You're invited for a PlaceX video interview. Join here: ${shareUrl}`,
-                },
-              ].map(({ label, text }) => (
-                <CopyButton key={label} text={text} label={label} />
-              ))}
-            </div>
-          </div>
-
-          {/* Features */}
-          <div className="hr-card p-5">
-            <h3 className="font-semibold hr-text-primary text-sm mb-3 flex items-center gap-2">
-              <Users className="w-4 h-4 text-violet-400" /> Features
-            </h3>
-            <ul className="space-y-2 text-xs hr-text-secondary">
-              {[
-                "✅ HD Video & Audio",
-                "✅ Screen Sharing",
-                "✅ In-call Chat",
-                "✅ Raise Hand",
-                "✅ Background Blur",
-                "✅ Recording (self-hosted)",
-                "✅ No time limit",
-                "✅ Completely Free",
-              ].map(f => (
-                <li key={f}>{f}</li>
-              ))}
-            </ul>
-          </div>
         </motion.div>
       </div>
     </div>

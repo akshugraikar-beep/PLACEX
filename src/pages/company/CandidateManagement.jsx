@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import InterviewScheduleModal from '../../components/InterviewScheduleModal';
+
 import {
   Search, Filter, Star, Eye, ChevronDown, X,
   Brain, MessageSquare, Shield, Zap, CheckCircle, XCircle,
@@ -33,8 +35,9 @@ const ScoreBar = ({ value, color }) => (
   </div>
 );
 
-const CandidateDrawer = ({ candidate, onClose }) => {
+const CandidateDrawer = ({ candidate, onClose, onScheduleClick }) => {
   if (!candidate) return null;
+
   const avatarColors = ['#7c3aed','#4f46e5','#0ea5e9','#10b981','#f59e0b','#ec4899'];
   const color = avatarColors[candidate.id % avatarColors.length];
 
@@ -142,11 +145,13 @@ const CandidateDrawer = ({ candidate, onClose }) => {
             <button className="py-2.5 rounded-xl text-sm font-medium text-red-400 border border-red-400/30 hover:bg-red-400/10 transition-all">
               ✗ Reject
             </button>
-            <button className="col-span-2 py-2.5 rounded-xl text-sm font-medium text-white transition-all hover:opacity-90"
+            <button onClick={() => onScheduleClick(candidate)}
+              className="col-span-2 py-2.5 rounded-xl text-sm font-medium text-white transition-all hover:opacity-90"
               style={{ background: 'linear-gradient(135deg,#7c3aed,#4f46e5)' }}>
               Schedule Interview
             </button>
           </div>
+
         </motion.div>
       </motion.div>
     </AnimatePresence>
@@ -160,6 +165,8 @@ const CandidateManagement = () => {
   const [minScore, setMinScore] = useState(0);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [schedulingCandidate, setSchedulingCandidate] = useState(null);
+
 
   const statuses = ['All', 'Shortlisted', 'Interview', 'Hired', 'Pending', 'Rejected'];
   const skills = ['All', 'React', 'Node.js', 'Java', 'Python', 'Kotlin', 'Figma'];
@@ -353,9 +360,31 @@ const CandidateManagement = () => {
       </motion.div>
 
       {/* Candidate Drawer */}
-      <CandidateDrawer candidate={selectedCandidate} onClose={() => setSelectedCandidate(null)} />
+      <CandidateDrawer 
+        candidate={selectedCandidate} 
+        onClose={() => setSelectedCandidate(null)} 
+        onScheduleClick={(c) => {
+          setSelectedCandidate(null);
+          setSchedulingCandidate(c);
+        }}
+      />
+
+      {/* Interview Scheduling Modal */}
+      <InterviewScheduleModal
+        isOpen={!!schedulingCandidate}
+        onClose={() => setSchedulingCandidate(null)}
+        candidate={schedulingCandidate}
+        onScheduleSuccess={(updatedCandidate) => {
+          // Find and update candidate status locally in UI
+          const found = CANDIDATES.find(x => x.id === updatedCandidate.id);
+          if (found) {
+            found.status = 'Interview';
+          }
+        }}
+      />
     </div>
   );
 };
+
 
 export default CandidateManagement;
